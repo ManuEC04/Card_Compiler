@@ -2,154 +2,300 @@ namespace Compiler
 {
     public class Parser
     {
-
-
-        public void CheckCardCreation(List<Token> tokens, int i)
+        public CardCreation CheckCardCreation(List<Token> tokens, ref int i)
         {
             CardCreation Card = new CardCreation();
             TokenValues CardChecker = new TokenValues();
-            if (tokens[i].Value == CardChecker.Card)
+            CheckCardType(Card, CardChecker, tokens, ref i);
+            CheckCardName(Card, CardChecker, tokens, ref i);
+            CheckCardFaction(Card, CardChecker, tokens, ref i);
+            CheckCardRange(Card, CardChecker, tokens, ref i);
+            CheckCardPower(Card, CardChecker, tokens, ref i);
+            return Card;
+        }
+        public void PrintValues(List<Token> tokens, int i)
+        {
+            CardCreation MyCard = CheckCardCreation(tokens, ref i);
+            Console.WriteLine(MyCard.Name_Assignation);
+            Console.WriteLine(MyCard.Type_Assignation);
+            Console.WriteLine(MyCard.Faction_Assignation);
+            Console.WriteLine(MyCard.Range_Assignation);
+            Console.WriteLine(MyCard.Power_Assignation);
+        }
+        void CheckCardType(CardCreation Card, TokenValues CardChecker, List<Token> tokens, ref int i)
+        {
+            if (Card.Type_Assignation == "")
             {
-                Console.WriteLine("Se ejecuta la primera evaluacion");
-                if (tokens[LookAhead(i)].Value == CardChecker.OpenCurlyBraces)
+                if (tokens[i].Value == CardChecker.Card)
                 {
-                    Console.WriteLine("Se encuentra {");
-                    if (tokens[LookAhead(i)].Value == CardChecker.Type)
+                    i++;
+                    if (tokens[i].Value == CardChecker.OpenCurlyBraces)
                     {
-                        Console.WriteLine("Se encuentra la palabra reservada type");
-                        if (tokens[LookAhead(i)].Value == CardChecker.Points)
+                        i++;
+                        if (tokens[i].Value == CardChecker.Type)
                         {
-                            Console.WriteLine("Se encuentran dos puntos");
-                            if (tokens[LookAhead(i)].Type == "IDENTIFIER")
+                            i++;
+                            if (tokens[i].Value == CardChecker.Points)
                             {
-                                Console.WriteLine("Se encuentra un identificador");
-                                if (tokens[LookAhead(i)].Type == CardChecker.Comma)
+                                i++;
+                                if (tokens[i].Value == CardChecker.QuotationMark)
                                 {
-                                    Console.WriteLine("Se encuentra la coma");
-                                    Card.Type_Assignation = tokens[LookAhead(i)].Value;
-                                    Console.WriteLine("Se ha hecho la asignacion");
-                                }
-                                else { Console.WriteLine("$ , Was expected at line" + tokens[i].Position); }
-                            }
-                            else
-                            {
-                                Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine(": Was expected at line" + tokens[i].Position);
-                        }
-                    }
+                                    i++;
 
-
-                    else if (tokens[LookAhead(i)].Value == CardChecker.Name)
-                    {
-                        if (tokens[LookAhead(i)].Value == CardChecker.Points)
-                        {
-                            if (tokens[LookAhead(i)].Type == "IDENTIFIER")
-                            {
-                                Card.Name_Assignation = tokens[LookAhead(i)].Value;
-                            }
-                            else
-                            {
-                                Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
-                            }
-                        }
-
-
-                        else if (tokens[LookAhead(i)].Value == CardChecker.Faction)
-                        {
-                            if (tokens[LookAhead(i)].Value == CardChecker.Points)
-                            {
-                                if (tokens[LookAhead(i)].Type == "IDENTIFIER")
-                                {
-                                    Card.Faction_Assignation = tokens[i].Value;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
-                                }
-                            }
-
-
-                            else if (tokens[LookAhead(i)].Value == CardChecker.Power)
-                            {
-                               throw new NotImplementedException();
-                            }
-
-
-                            else if (tokens[LookAhead(i)].Value == CardChecker.Range)
-                            {
-                                if (tokens[LookAhead(i)].Value == CardChecker.Points)
-                                {
-                                    if (tokens[LookAhead(i)].Value == CardChecker.OpenSquareBracket)
+                                    if (tokens[i].Type == "IDENTIFIER")
                                     {
-                                        if (tokens[LookAhead(i)].Type == "IDENTIFIER")
+                                        CardCreation Temp = new CardCreation();
+                                        Temp.Type_Assignation = tokens[i].Value;
+                                        i++;
+                                        if (tokens[i].Value == CardChecker.QuotationMark)
                                         {
-                                            if (tokens[LookAhead(i)].Type == CardChecker.ClosedSquareBracket)
+                                            i++;
+
+                                            if (tokens[i].Value == CardChecker.Comma)
                                             {
-                                                if (tokens[LookAhead(i)].Type == CardChecker.Comma)
-                                                {
-                                                    Card.Range_Assignation = tokens[LookBack(i, 2)].Value;
-                                                }
-                                                else
-                                                {
-                                                    Console.WriteLine(", was expected at line" + tokens[i].Position);
-                                                }
+                                                Card.Type_Assignation = Temp.Type_Assignation;
+                                                i++;
                                             }
                                             else
                                             {
-                                                Console.WriteLine("] was expected at line" + tokens[i].Position);
+                                                Console.WriteLine("$ , Was expected at line" + tokens[i].Position);
                                             }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("An identifier was expected at line" + tokens[i].Position);
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("[ Was expected at line" + tokens[i].Position);
+                                        Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine(": Was expected at line" + tokens[i].Position);
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("A type is already declared");
+                }
+            }
+        }
+        void CheckCardFaction(CardCreation Card, TokenValues CardChecker, List<Token> tokens, ref int i)
+        {
+            if (Card.Faction_Assignation == "")
+            {
+                if (tokens[i].Value == CardChecker.Faction)
+                {
+                    i++;
+                    if (tokens[i].Value == CardChecker.Points)
+                    {
+                        i++;
+                        if (tokens[i].Value == CardChecker.QuotationMark)
+                        {
+
+                            i++;
+
+                            if (tokens[i].Type == "IDENTIFIER")
+                            {
+                                CardCreation Temp = new CardCreation();
+                                Temp.Faction_Assignation = tokens[i].Value;
+                                i++;
+                                if (tokens[i].Value == CardChecker.QuotationMark)
+                                {
+                                    i++;
+                                    if (tokens[i].Value == CardChecker.Comma)
+                                    {
+                                        Card.Faction_Assignation = Temp.Faction_Assignation;
+                                        i++;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("$ , Was expected at line" + tokens[i].Position);
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(": Was expected at line" + tokens[i].Position);
+                    }
+                }
+            }
+        }
+        void CheckCardPower(CardCreation Card, TokenValues CardChecker, List<Token> tokens, ref int i)
+        {
+            if (Card.Power_Assignation == "")
+            {
+                if (tokens[i].Value == CardChecker.Power)
+                {
+                    i++;
+                    if (tokens[i].Value == CardChecker.Points)
+                    {
+                        i++;
+                        if (tokens[i].Type == "NUMBER")
+                        {
+                            CardCreation Temp = new CardCreation();
+                            Temp.Power_Assignation = tokens[i].Value;
+                            i++;
+
+                            if (tokens[i].Type == "OPERATOR")
+                            {
+
+                            }
+
+                            else if (tokens[i].Value == CardChecker.Comma)
+                            {
+                                Card.Power_Assignation = Temp.Power_Assignation;
+                                i++;
+                            }
+                            else
+                            {
+                                Console.WriteLine("$ , Was expected at line" + tokens[i].Position);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        void CheckCardName(CardCreation Card, TokenValues CardChecker, List<Token> tokens, ref int i)
+        {
+            if (Card.Name_Assignation == "")
+            {
+                if (tokens[i].Value == CardChecker.Name)
+                {
+                    i++;
+                    if (tokens[i].Value == CardChecker.Points)
+                    {
+                        i++;
+                        if (tokens[i].Value == CardChecker.QuotationMark)
+                        {
+                            i++;
+                            if (tokens[i].Type == "IDENTIFIER")
+                            {
+                                CardCreation Temp = new CardCreation();
+                                Temp.Name_Assignation = tokens[i].Value;
+                                i++;
+                                if (tokens[i].Value == CardChecker.QuotationMark)
+                                {
+                                    i++;
+                                    if (tokens[i].Value == CardChecker.Comma)
+                                    {
+
+                                        Card.Name_Assignation = Temp.Name_Assignation;
+                                        i++;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("$An Identifier Was expected at line" + tokens[i].Position);
+                            }
+                        }
+                    }
+                }
+            }
+            else { return; }
+        }
+        void CheckCardRange(CardCreation Card, TokenValues CardChecker, List<Token> tokens, ref int i)
+        {
+            if (Card.Range_Assignation == "")
+            {
+
+                if (tokens[i].Value == CardChecker.Range)
+                {
+                    i++;
+                    if (tokens[i].Value == CardChecker.Points)
+                    {
+                        i++;
+                        if (tokens[i].Value == CardChecker.OpenSquareBracket)
+                        {
+                            i++;
+                            if (tokens[i].Value == CardChecker.QuotationMark)
+                            {
+                                i++;
+
+                                if (tokens[i].Type == "IDENTIFIER")
+                                {
+                                    CardCreation Temp = new CardCreation();
+                                    Temp.Range_Assignation = tokens[i].Value;
+                                    i++;
+                                    if (tokens[i].Value == CardChecker.QuotationMark)
+                                    {
+                                        i++;
+
+                                        if (tokens[i].Value == CardChecker.ClosedSquareBracket)
+                                        {
+                                            i++;
+                                            if (tokens[i].Value == CardChecker.Comma)
+                                            {
+
+                                                Card.Range_Assignation = Temp.Range_Assignation;
+                                                i++;
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine(", was expected at line" + tokens[i].Position);
+                                            }
+                                        }
+                                        else if (tokens[i].Value == CardChecker.Comma)
+                                        {
+                                            i++;
+                                            if (tokens[i].Value == CardChecker.QuotationMark)
+                                            {
+                                                if (tokens[i].Type == "IDENTIFIER")
+                                                {
+                                                    CardCreation Temp1 = new CardCreation();
+                                                    Temp1.Range_Assignation = tokens[i].Value;
+                                                    i++;
+                                                    if (tokens[i].Value == CardChecker.QuotationMark)
+                                                    {
+                                                        i++;
+                                                        if (tokens[i].Value == CardChecker.ClosedSquareBracket)
+                                                        {
+                                                            i++;
+                                                            if (tokens[i].Value == CardChecker.Comma)
+                                                            {
+                                                                Card.Range_Assignation = Temp.Range_Assignation + "," + Temp1.Range_Assignation;
+                                                                i++;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine(": Was expected at line" + tokens[i].Position);
+                                    Console.WriteLine("An identifier was expected at line" + tokens[i].Position);
                                 }
                             }
                         }
                         else
                         {
-                            Console.WriteLine(": Was expected at line" + tokens[i].Position);
+                            Console.WriteLine("[ Was expected at line" + tokens[i].Position);
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine(": Was expected at line" + tokens[i].Position);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("${ Was expected at line" + tokens[i].Position);
+                    Console.WriteLine(": Was expected at line" + tokens[i].Position);
                 }
             }
         }
-        /* bool CanLookAhead(List<Token> tokens, int i)
-         {
-             if (i != tokens.Count - 1)
-             {
-                 return true;
-             }
-             return false;
-         }
-         */
-        int LookAhead(int position)
-        {
-            return ++position;
-        }
-        int LookBack(int position, int i)
-        {
-            return position - i;
-        }
     }
-
 }
-
 

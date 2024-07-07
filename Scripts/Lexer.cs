@@ -12,13 +12,14 @@ public class Lexer
         ("KEYWORD", @"(?i)\b(card|type|name|faction|power|range|
         onactivation|effect|params|amount|number|action|for|
         while|selector|source|single|predicate|postaction)\b"),
-        ("IDENTIFIER", @"""(?:[^""\\]|\\.)*"""),
         ("NUMBER", @"\b\d+\b"),
         ("OPERATOR", @"[+\-*/=<>!&|]=?|&&|\|\||==|!=|<=|>=]"),
         ("SYMBOL", @"[\[\]:{},]"),
         ("WHITESPACE", @"\s+"),
-        ("STRING", "\".*?\""),
+        ("IDENTIFIER", @"(?<="")([^""]*?)(?="")"),
         ("UNKNOWN", @".")
+
+        
     };
 
     public List<Token> Tokenize(string input)

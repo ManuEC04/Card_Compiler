@@ -24,6 +24,7 @@ namespace Compiler
         public string ClosedSquareBracket{get; private set;}
         public string OpenCurlyBraces { get; private set; }
         public string ClosedCurlyBraces { get; private set; }
+        public string QuotationMark {get; private set;}
         public string Card{get; private set;}
         public string Type { get; private set; }
         public string Name { get; private set; }
@@ -40,6 +41,7 @@ namespace Compiler
             ClosedSquareBracket = "]";
             OpenCurlyBraces = "{";
             ClosedCurlyBraces = "}";
+            QuotationMark = "\"";
             Card = "Card";
             Type = "Type";
             Name = "Name";
