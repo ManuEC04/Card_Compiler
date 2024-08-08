@@ -7,5 +7,6 @@ namespace Compiler
         Function,
         Binary, 
         Unary,
+        Merge
     }
 }

@@ -43,6 +43,13 @@ namespace Compiler
         public string Minus {get; private set;}
         public string Div {get; private set;}
         public string Mult {get; private set;}
+        public string Elevate {get; private set;}
+        public string Less {get; private set;}
+        public string Less_Equal {get; private set;}
+        public string Greater {get; private set;}
+        public string Greater_Equal {get; private set;}
+        public string Equal_Equal {get; private set;}
+        public string Equal {get; private set;}
         public string StatementSeparator {get; private set;}
 
 
@@ -68,6 +75,13 @@ namespace Compiler
             Minus = "-";
             Mult = "*";
             Div = "/";
+            Elevate = "^";
+            Less = "<";
+            Less_Equal = "<=";
+            Greater = ">";
+            Greater_Equal = ">=";
+            Equal_Equal = "==";
+            Equal = "=";
         }
     }
 }

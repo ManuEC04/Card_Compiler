@@ -15,7 +15,7 @@ public class Lexer
         (TokenType.Minus, @"[\[\]-]"),
         (TokenType.Multiplication, @"[\[\]*]"),
         (TokenType.Division, @"[\[\]/]"),
-        (TokenType.Comparison_Op, @"[\==\>=\>/<\<=]"),
+        (TokenType.Comparison_Op, @"==|>=|<=|>|<|="),
         (TokenType.Logic_Op, @"&&|\|\|"),
         (TokenType.Symbol, @"[\[\]:{}""']"),
         (TokenType.StatementSeparator, @"[\[\];]"),

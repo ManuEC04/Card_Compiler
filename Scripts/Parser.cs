@@ -294,9 +294,22 @@ namespace Compiler
          */
         public void ParseOperations()
         {
-            Expression expr = Term();
+            Expression expr = Comparation();
             expr.Evaluate();
             Console.WriteLine(expr.Value);
+        }
+        Expression Comparation()
+        {
+            Expression expr = Term();
+
+            if (match(Checker.Less) || match(Checker.Less_Equal) || match(Checker.Greater)
+            || match(Checker.Greater_Equal) || match(Checker.Equal_Equal))
+            {
+                Token op = previous();
+                Expression right = Term();
+                expr = new Comparation(expr, right, op.Value, ExpressionType.Binary);
+            }
+            return expr;
         }
         Expression Term()
         {
@@ -320,20 +333,32 @@ namespace Compiler
         }
         Expression Factor()
         {
-            Expression expr = Unary();
+            Expression expr = Elevate();
             while (match(Checker.Mult))
             {
                 Console.WriteLine("Encuentra el producto");
                 Token op = previous();
-                Expression right = Unary();
+                Expression right = Elevate();
                 expr = new Mul(expr, right, op, ExpressionType.Binary);
             }
             while (match(Checker.Div))
             {
                 Console.WriteLine("Encuentra la division");
                 Token op = previous();
-                Expression right = Unary();
+                Expression right = Elevate();
                 expr = new Div(expr, right, op, ExpressionType.Binary);
+            }
+            return expr;
+        }
+        Expression Elevate()
+        {
+            Expression expr = Unary();
+            while (match(Checker.Elevate))
+            {
+                Console.WriteLine("Detecta la potencia");
+                Token op = previous();
+                Expression right = Unary();
+                expr = new Elevate(expr, right, op, ExpressionType.Binary);
             }
             return expr;
         }
@@ -343,7 +368,7 @@ namespace Compiler
             {
                 Token op = previous();
                 Expression right = Unary();
-                return new UnaryExpression( op.Value , right ,ExpressionType.Unary);
+                return new UnaryExpression(op.Value, right, ExpressionType.Unary);
             }
             return Atom();
         }
@@ -352,79 +377,33 @@ namespace Compiler
             Expression expr = new NumberNode(0);
             if (matchtype(TokenType.Number))
             {
-                Console.WriteLine ("Encuentra el numero");
-                Token tok = previous();;
+                Console.WriteLine("Encuentra el numero");
+                Token tok = previous(); ;
                 return new NumberNode(Double.Parse(previous().Value));
             }
-            if(match(Checker.OpenParenthesis))
+            if (match(Checker.OpenParenthesis))
             {
                 Console.WriteLine("Encuentra el parentesis");
+                Token op = previous();
                 expr = Term();
-                if(!match(Checker.ClosedParenthesis)){Errors.Add(new CompilingError(Pos, ErrorCode.Expected , ") expected"));}
+                expr = new Parenthesis(op.Value, ExpressionType.Merge, expr);
+                if (!match(Checker.ClosedParenthesis)) { Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ") expected")); }
                 return expr;
             }
             return expr;
         }
-        void Next()
-        {
-            Pos++;
-        }
-        void Back()
-        {
-            Pos--;
-        }
-        void MoveBack(int i)
-        {
-            Pos = -i;
-        }
-        void MoveNext(int i)
-        {
-            Pos += i;
-        }
-        void Reset()
-        {
-            Pos = 0;
-        }
-        bool Match(Token token, string value)
-        {
-            if (token.Value == value)
-            {
-                return true;
-            }
-            return false;
-        }
-        void CloseSymbol(int position)
 
-        
 
-        {
-            string symbol;
-            if (tokens[position].Value == Checker.OpenCurlyBraces)
-            {
-                symbol = Checker.ClosedCurlyBraces;
-            }
-            else if (tokens[position].Value == Checker.OpenSquareBracket)
-            {
-                symbol = Checker.ClosedSquareBracket;
-            }
-            else if (tokens[position].Value == Checker.QuotationMark)
-            {
-                symbol = Checker.QuotationMark;
-            }
-            else
-            {
-                throw new Exception("El string no es un simbolo");
-            }
-            for (int i = position; i < tokens.Count; i++)
-            {
-                if (tokens[i].Value == symbol)
-                {
-                    return;
-                }
-            }
-            throw new Exception("Se esperaba el caracter" + " " + symbol + " " + "debido a" + " " + tokens[Pos].Value + " " + "que se encuentra en la posicion" + " " + tokens[Pos].Position);
-        }
+
         //Auxiliar Methods
+
+        void checkend()
+        {
+            if (!match(Checker.StatementSeparator))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "; expected"));
+            }
+        }
         bool checkvalue(string value)
         {
             if (isAtEnd()) { return false; }
@@ -475,7 +454,65 @@ namespace Compiler
             }
             return false;
         }
-    }
 
+
+        //GARBAGE METHODS
+        void Next()
+        {
+            Pos++;
+        }
+        void Back()
+        {
+            Pos--;
+        }
+        void MoveBack(int i)
+        {
+            Pos = -i;
+        }
+        void MoveNext(int i)
+        {
+            Pos += i;
+        }
+        void Reset()
+        {
+            Pos = 0;
+        }
+        bool Match(Token token, string value)
+        {
+            if (token.Value == value)
+            {
+                return true;
+            }
+            return false;
+        }
+        void CloseSymbol(int position)
+        {
+            string symbol;
+            if (tokens[position].Value == Checker.OpenCurlyBraces)
+            {
+                symbol = Checker.ClosedCurlyBraces;
+            }
+            else if (tokens[position].Value == Checker.OpenSquareBracket)
+            {
+                symbol = Checker.ClosedSquareBracket;
+            }
+            else if (tokens[position].Value == Checker.QuotationMark)
+            {
+                symbol = Checker.QuotationMark;
+            }
+            else
+            {
+                throw new Exception("El string no es un simbolo");
+            }
+            for (int i = position; i < tokens.Count; i++)
+            {
+                if (tokens[i].Value == symbol)
+                {
+                    return;
+                }
+            }
+            throw new Exception("Se esperaba el caracter" + " " + symbol + " " + "debido a" + " " + tokens[Pos].Value + " " + "que se encuentra en la posicion" + " " + tokens[Pos].Position);
+        }
+    }
 }
 
