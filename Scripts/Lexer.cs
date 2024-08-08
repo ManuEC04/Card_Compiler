@@ -7,18 +7,22 @@ namespace Compiler
  
 public class Lexer
 {
-    private static readonly List<(string Type, string Pattern)> tokenDefinitions = new List<(string, string)>
+    private static readonly List<(TokenType Type, string Pattern)> tokenDefinitions = new List<(TokenType, string)>
     {
-        ("KEYWORD", @"(?i)\b(card|type|name|faction|power|range|
-        onactivation|effect|params|amount|number|action|for|
-        while|selector|source|single|predicate|postaction)\b"),
-        ("NUMBER", @"\b\d+\b"),
-        ("OPERATOR", @"[+\-*/=<>!&|]=?|&&|\|\||==|!=|<=|>=]"),
-        ("SYMBOL", @"[\[\]:{},]"),
-        ("WHITESPACE", @"\s+"),
-        ("IDENTIFIER", @"(?<="")([^""]*?)(?="")"),
-        ("UNKNOWN", @".")
-
+        (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range)\b"),
+        (TokenType.Number, @"\b\d+(\.\d+)?\b"),
+        (TokenType.Plus, @"[\[\]+]"),
+        (TokenType.Minus, @"[\[\]-]"),
+        (TokenType.Multiplication, @"[\[\]*]"),
+        (TokenType.Division, @"[\[\]/]"),
+        (TokenType.Comparison_Op, @"[\==\>=\>/<\<=]"),
+        (TokenType.Logic_Op, @"&&|\|\|"),
+        (TokenType.Symbol, @"[\[\]:{}""']"),
+        (TokenType.StatementSeparator, @"[\[\];]"),
+        (TokenType.Comma, @"[\[\],]"),
+        (TokenType.Whitespace, @"\s+"),
+        (TokenType.Identifier, @"(?<="")([^""]*?)(?="")"),
+        (TokenType.Unknown, @".")
         
     };
 
@@ -38,7 +42,7 @@ public class Lexer
 
                 if (match.Success && match.Index == position)
                 {
-                    if (type != "WHITESPACE") // Ignore whitespaces
+                    if (type != TokenType.Whitespace) // Ignore whitespaces
                     {
                         tokens.Add(new Token(type, match.Value , position));
                         Console.WriteLine("TYPE"+ ":"+ " "+ type + " " + "VALUE"+ ":" + " "+ match.Value);
@@ -53,6 +57,7 @@ public class Lexer
               throw new Exception($"Unexpected character at line {position}");
             }
         }
+        tokens.Add(new Token(TokenType.EOF , "END", tokens.Count - 1));
         return tokens;
     }
 }

@@ -1,4 +1,4 @@
-namespace Projecto_para_probar_scripts
+namespace Compiler
 {
     public static class Exceptions
     {
@@ -29,6 +29,10 @@ namespace Projecto_para_probar_scripts
          public static void QuotationMarkException(int position)
         {
             throw new Exception("\" Was expected at line" + " " + position);
+        }
+         public static void IdentifierException(int position)
+        {
+            throw new Exception(" An identifier was expected at line" + " " + position);
         }
         
     }
