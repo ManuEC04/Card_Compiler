@@ -1,6 +1,7 @@
 //Here we verify that the sequence of tokens complies with the language syntax through a function for each element
 using System.Numerics;
 using System.Runtime.ConstrainedExecution;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 
 namespace Compiler
@@ -8,9 +9,10 @@ namespace Compiler
     public class Parser
     {
         int Pos { get; set; }
-        List<Token> tokens { get; set; }
+        List <Token> tokens { get; set; }
         TokenValues Checker = new TokenValues();
-        List<CompilingError> Errors;
+        Context context = new Context();
+        List <CompilingError> Errors;
         public Parser(List<Token> tokens)
         {
             Pos = 0;
@@ -24,368 +26,287 @@ namespace Compiler
             {
                 Console.WriteLine(error.Argument);
             }
+            while (!isAtEnd())
+            {
+                if (match(Checker.Card))
+                {
+                    Card? Card = ParseCard();
+                    if (Card.CheckSemantic())
+                    {
+                        tree.Nodes.Add(Card);
+                        Card.Evaluate();
+                        Console.WriteLine("Power" + " " + Card.Power.Value);
+                        Console.WriteLine("Type" + " " + Card.Type.Value);
+                        Console.WriteLine("Faction" + " " + Card.Faction.Value);
+                        Console.WriteLine("Name" + " " + Card.Name.Value);
+                        Console.Write("Range" + " ");
+                        foreach (Expression exp in Card.Range)
+                        {
+                            Console.Write(exp.Value + " " + "," + " ");
+                        }
+                        Console.WriteLine(" ");
+                        Console.WriteLine(" ");
+                    }
+                }
+                else
+                {
+                    ParseVar();
+                }
+            }
             return tree;
         }
-        /* public CardAssignation ParseCard()
-         {
-             if (!Match(tokens[Pos], Checker.Card))
-             {
-                 return null;
-             }
-             CardAssignation Card = new CardAssignation();
-             Next();
-             if (!Match(tokens[Pos], Checker.OpenCurlyBraces))
-             {
-                 Exceptions.OpenCurlyException(Pos);
-             }
-             CloseSymbol(Pos);
-             Next();
-             CheckCardAssignations(Card);
-             Console.WriteLine(Card.Faction_Assignation.Value);
-             Console.WriteLine(Card.Name_Assignation.Value);
-             Console.WriteLine(Card.Type_Assignation.Value);
-             Console.WriteLine(Card.Range_Assignation.Value);
-             Console.WriteLine(Card.Power_Assignation.Value);
-
-             return Card;
-
-         }
-         void CheckCardAssignations(CardAssignation Card)
-         {
-             if (Match(tokens[Pos], Checker.Type))
-             {
-                 Next();
-                 CheckTypeAssignation(Card);
-             }
-             if (Match(tokens[Pos], Checker.Name))
-             {
-                 Next();
-                 CheckNameAssignation(Card);
-             }
-             if (Match(tokens[Pos], Checker.Faction))
-             {
-                 Next();
-                 CheckFactionAssignation(Card);
-             }
-             if (Match(tokens[Pos], Checker.Range))
-             {
-                 Next();
-                 CheckRangeAssignation(Card);
-             }
-             if (Match(tokens[Pos], Checker.Power))
-             {
-                 Next();
-                 CheckPowerAssignation(Card);
-             }
-         }
-         void CheckTypeAssignation(CardAssignation Card)
-         {
-             if (!Match(tokens[Pos], Checker.Points))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ": expected"));
-                 Exceptions.PointsException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!MatchToken(tokens[Pos], "IDENTIFIER"))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "identifier expected"));
-                 Exceptions.IdentifierException(Pos);
-             }
-             string temp = tokens[Pos].Value;
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.Comma))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " , expected"));
-                 Exceptions.CommaException(Pos);
-             }
-             Card.Type_Assignation = new Expression(temp, ExpressionType.Text);
-             Next();
-         }
-         void CheckNameAssignation(CardAssignation Card)
-         {
-             if (!Match(tokens[Pos], Checker.Points))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " : expected"));
-                 Exceptions.PointsException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!MatchToken(tokens[Pos], "IDENTIFIER"))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " identifier expected"));
-                 Exceptions.IdentifierException(Pos);
-             }
-             string temp = tokens[Pos].Value;
-             Next();
-
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.Comma))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " , expected"));
-                 Exceptions.CommaException(Pos);
-             }
-             Card.Name_Assignation = new Expression(temp, ExpressionType.Text);
-             Next();
-         }
-         void CheckFactionAssignation(CardAssignation Card)
-         {
-             if (!Match(tokens[Pos], Checker.Points))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " : expected"));
-                 Exceptions.PointsException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!MatchToken(tokens[Pos], "IDENTIFIER"))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " identifier expected"));
-                 Exceptions.IdentifierException(Pos);
-             }
-             string temp = tokens[Pos].Value;
-             Next();
-             if (MatchToken(tokens[Pos], "IDENTIFIER"))
-             {
-                 temp += tokens[Pos].Value;
-                 Next();
-             }
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.Comma))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " , expected"));
-                 Exceptions.CommaException(Pos);
-             }
-             Card.Faction_Assignation = new Expression(temp, ExpressionType.Text);
-             Next();
-         }
-         void CheckRangeAssignation(CardAssignation Card)
-         {
-             if (!Match(tokens[Pos], Checker.Points))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " : expected"));
-                 Exceptions.PointsException(Pos);
-             }
-             Next();
-             if (!Match(tokens[Pos], Checker.OpenSquareBracket))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " [ expected"));
-                 Exceptions.OpenSquareException(Pos);
-             }
-             CloseSymbol(Pos);
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (!MatchToken(tokens[Pos], "IDENTIFIER"))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " identifier expected"));
-                 Exceptions.IdentifierException(Pos);
-             }
-             string temp = tokens[Pos].Value;
-             Next();
-             if (!Match(tokens[Pos], Checker.QuotationMark))
-             {
-                 Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                 Exceptions.QuotationMarkException(Pos);
-             }
-             Next();
-             if (Match(tokens[Pos], Checker.Comma))
-             {
-                 Next();
-                 if (!Match(tokens[Pos], Checker.QuotationMark))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                     Exceptions.QuotationMarkException(Pos);
-                 }
-                 Next();
-                 if (!MatchToken(tokens[Pos], "IDENTIFIER"))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " identifier expected"));
-                     Exceptions.IdentifierException(Pos);
-                 }
-                 temp += tokens[Pos].Value;
-                 Next();
-                 if (!Match(tokens[Pos], Checker.QuotationMark))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
-                     Exceptions.QuotationMarkException(Pos);
-                 }
-                 Next();
-                 if (!Match(tokens[Pos], Checker.ClosedSquareBracket))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " ] expected"));
-                     Exceptions.ClosedSquareException(Pos);
-                 }
-                 Next();
-                 if (!Match(tokens[Pos], Checker.Comma))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " , expected"));
-                     Exceptions.CommaException(Pos);
-                 }
-                 Card.Range_Assignation = new Expression(temp, ExpressionType.Text);
-                 Next();
-             }
-             else if (Match(tokens[Pos], Checker.ClosedSquareBracket))
-             {
-                 Next();
-                 if (!Match(tokens[Pos], Checker.Comma))
-                 {
-                     Errors.Add(new CompilingError(Pos, ErrorCode.Expected, " , expected"));
-                     Exceptions.CommaException(Pos);
-                 }
-                 Card.Range_Assignation = new Expression(temp, ExpressionType.Text);
-                 Next();
-             }
-         }
-         void CheckPowerAssignation(CardAssignation Card)
-         {
-             if (!Match(tokens[Pos], Checker.Points))
-             {
-                 Exceptions.PointsException(Pos);
-             }
-             Next();
-             if (!MatchToken(tokens[Pos], "NUMBER"))
-             {
-                 Exceptions.IdentifierException(Pos);
-             }
-             string temp = tokens[Pos].Value;
-             Next();
-             if (!Match(tokens[Pos], Checker.Comma))
-             {
-                 Exceptions.CommaException(Pos);
-             }
-             Card.Power_Assignation = new Expression(temp, ExpressionType.Number);
-             Next();
-         }
-         */
-        public void ParseOperations()
+        public Card ParseCard()
         {
-            Expression expr = Comparation();
-            expr.Evaluate();
-            Console.WriteLine(expr.Value);
+            Card card = new Card();
+            if (!match(Checker.OpenCurlyBraces))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "{ expected"));
+            }
+            while (lookahead(Checker.Type) || lookahead(Checker.Name) || lookahead(Checker.Faction)
+            || lookahead(Checker.Power) || lookahead(Checker.Range))
+            {
+                ParseCardProperties(card);
+
+            }
+            if (!match(Checker.ClosedCurlyBraces))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "} expected"));
+            }
+            return card;
         }
-        Expression Comparation()
+        void ParseCardProperties(Card card)
         {
-            Expression expr = Term();
+            if (match(Checker.Type) && card.Type == null)
+            {
+                card.Type = ParseTextProperties();
+            }
+            else if (match(Checker.Name) && card.Name == null)
+            {
+                card.Name = ParseTextProperties();
+            }
+            else if (match(Checker.Faction) && card.Faction == null)
+            {
+                card.Faction = ParseTextProperties();
+            }
+            else if (match(Checker.Power) && card.Power == null)
+            {
+                Expression power = ParsePower();
+                power.Evaluate();
+                card.Power = power;
+            }
+            else if (match(Checker.Range) && card.Range == null)
+            {
+                card.Range = ParseRange();
+            }
+            else
+            {
+                Errors.Add(new CompilingError (Pos , ErrorCode.Invalid , "Invalid definition of Card"));
+            }
+            return;
+        }
+        Expression ParseTextProperties()  //Auxiliar Method for parsing name , type and faction of the card
+        {
+            if (!match(Checker.Points))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ": expected"));
+            }
+            Expression expr = ParseText();
+            expr.Evaluate();
+            checkcomma();
+            return expr;
+        }
+        Expression ParsePower() // Auxiliar Method for parsig Power
+        {
+            if (!match(Checker.Points))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ": expected"));
+            }
+            Expression expr = ParseTerm();
+            checkcomma();
+            return expr;
+        }
+        List<Expression> ParseRange() // Auxiliar Method for parsig Range
+        {
+            if (!match(Checker.Points))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ": expected"));
+            }
+            if (!match(Checker.OpenSquareBracket))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "[ expected"));
+            }
+            List<Expression> range = new List<Expression>();
+            range.Add(ParseText());
+            while (match(Checker.Comma)) // With this loop every time that it find a comma it will call Parse Text function and after execute that the parser will be again on a comma token or at the end of the declaration
+            {
+                range.Add(ParseText());
+            }
+            if (!match(Checker.ClosedSquareBracket))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "] expected"));
+            }
+            checkcomma();
+            return range;
+        }
+        public void ParseVar()
+        {
+
+            if (tokens[Pos].Type == TokenType.Identifier)
+            {
+                context.Declaration.Add(tokens[Pos].Value, ParseDeclaration());
+            }
+            checkend();
+
+            Console.WriteLine(context.Declaration.Count);
+        }
+        Declaration ParseDeclaration()
+        {
+            Declaration declaration = new Declaration();
+            if (!matchtype(TokenType.Identifier))
+            {
+                return declaration;
+            }
+            string name = previous().Value;
+            if (!match(Checker.Equal))
+            {
+                return declaration;
+            }
+            if (lookahead(Checker.QuotationMark))
+            {
+                Expression text = ParseConcatenation();
+                text.Evaluate();
+                declaration = new Declaration(name, text);
+            }
+            else if (looktype(TokenType.Number))
+            {
+                Expression number = ParseTerm();
+                number.Evaluate();
+                declaration = new Declaration(name, number);
+            }
+            return declaration;
+        }
+
+        Expression ParseConcatenation()
+        {
+            Expression expr = ParseText();
+            if (match(Checker.Concatenation) || match(Checker.Spaced_Concatenation))
+            {
+                Token op = previous();
+                Expression right = ParseConcatenation();
+                expr = new Concatenation(expr, right, op.Value);
+            }
+            return expr;
+        }
+        Expression ParseText()
+        {
+            Expression expr = new Text("");
+            if (!match(Checker.QuotationMark))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
+            }
+            while (matchtype(TokenType.Text))
+            {
+                Token expression = previous();
+                expr = new Text(expression.Value);
+            }
+            if (!match(Checker.QuotationMark))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, "\" expected"));
+            }
+            return expr;
+        }
+        Expression ParseLogic()
+        {
+            Expression expr = ParseComparation();
+            if (match(Checker.And) || match(Checker.Or))
+            {
+                Token op = previous();
+                Expression right = ParseLogic();
+                expr = new Logic(expr, right, op.Value);
+            }
+            return expr;
+        }
+        Expression ParseComparation()
+        {
+            Expression expr = ParseTerm();
 
             if (match(Checker.Less) || match(Checker.Less_Equal) || match(Checker.Greater)
             || match(Checker.Greater_Equal) || match(Checker.Equal_Equal))
             {
                 Token op = previous();
-                Expression right = Term();
-                expr = new Comparation(expr, right, op.Value, ExpressionType.Binary);
+                Expression right = ParseTerm();
+                expr = new Comparation(expr, right, op.Value);
             }
             return expr;
         }
-        Expression Term()
+        Expression ParseTerm()
         {
-            Expression expr = Factor();
+            Expression expr = ParseFactor();
 
             while (match(Checker.Plus))
             {
-                Console.WriteLine("Encuentra la suma");
                 Token op = previous();
-                Expression right = Factor();
-                expr = new Plus(expr, right, op, ExpressionType.Binary);
+                Expression right = ParseFactor();
+                expr = new Plus(expr, right, op.Value);
             }
             while (match(Checker.Minus))
             {
-                Console.WriteLine("Encuentra la resta");
                 Token op = previous();
-                Expression right = Factor();
-                expr = new Minus(expr, right, op, ExpressionType.Binary);
+                Expression right = ParseFactor();
+                expr = new Minus(expr, right, op.Value);
             }
             return expr;
         }
-        Expression Factor()
+        Expression ParseFactor()
         {
-            Expression expr = Elevate();
+            Expression expr = ParseElevate();
             while (match(Checker.Mult))
             {
-                Console.WriteLine("Encuentra el producto");
                 Token op = previous();
-                Expression right = Elevate();
-                expr = new Mul(expr, right, op, ExpressionType.Binary);
+                Expression right = ParseElevate();
+                expr = new Mul(expr, right, op.Value);
             }
             while (match(Checker.Div))
             {
-                Console.WriteLine("Encuentra la division");
                 Token op = previous();
-                Expression right = Elevate();
-                expr = new Div(expr, right, op, ExpressionType.Binary);
+                Expression right = ParseElevate();
+                expr = new Div(expr, right, op.Value);
             }
             return expr;
         }
-        Expression Elevate()
+        Expression ParseElevate()
         {
-            Expression expr = Unary();
+            Expression expr = ParseUnary();
             while (match(Checker.Elevate))
             {
-                Console.WriteLine("Detecta la potencia");
                 Token op = previous();
-                Expression right = Unary();
-                expr = new Elevate(expr, right, op, ExpressionType.Binary);
+                Expression right = ParseUnary();
+                expr = new Elevate(expr, right, op.Value);
             }
             return expr;
         }
-        Expression Unary()
+        Expression ParseUnary()
         {
             if (match(Checker.Minus))
             {
                 Token op = previous();
-                Expression right = Unary();
+                Expression right = ParseUnary();
                 return new UnaryExpression(op.Value, right, ExpressionType.Unary);
             }
-            return Atom();
+            return ParseAtom();
         }
-        Expression Atom()
+        Expression ParseAtom()
         {
-            Expression expr = new NumberNode(0);
+            Expression expr = new Number(00);
             if (matchtype(TokenType.Number))
             {
-                Console.WriteLine("Encuentra el numero");
                 Token tok = previous(); ;
-                return new NumberNode(Double.Parse(previous().Value));
+                return new Number(Double.Parse(tok.Value));
             }
             if (match(Checker.OpenParenthesis))
             {
-                Console.WriteLine("Encuentra el parentesis");
                 Token op = previous();
-                expr = Term();
+                expr = ParseTerm();
                 expr = new Parenthesis(op.Value, ExpressionType.Merge, expr);
                 if (!match(Checker.ClosedParenthesis)) { Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ") expected")); }
                 return expr;
@@ -393,10 +314,7 @@ namespace Compiler
             return expr;
         }
 
-
-
         //Auxiliar Methods
-
         void checkend()
         {
             if (!match(Checker.StatementSeparator))
@@ -453,6 +371,30 @@ namespace Compiler
 
             }
             return false;
+        }
+        bool lookahead(string value)
+        {
+            if (checkvalue(value))
+            {
+                return true;
+            }
+            return false;
+        }
+        bool looktype(TokenType type)
+        {
+            if (checktype(type))
+            {
+                return true;
+            }
+            return false;
+        }
+        void checkcomma()
+        {
+            if (!match(Checker.Comma))
+            {
+                Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ", expected"));
+            }
+            return;
         }
 
 

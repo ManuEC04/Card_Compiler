@@ -9,6 +9,10 @@ public class Lexer
 {
     private static readonly List<(TokenType Type, string Pattern)> tokenDefinitions = new List<(TokenType, string)>
     {
+        (TokenType.Whitespace, @"\s+"),
+        (TokenType.Comma, @"[\,]"),
+        (TokenType.Symbol, @"[\[\]:{}""']"),
+        (TokenType.Text, "(?<=\")(.*?)(?=\")"),
         (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range)\b"),
         (TokenType.Number, @"\b\d+(\.\d+)?\b"),
         (TokenType.Plus, @"[\[\]+]"),
@@ -16,12 +20,10 @@ public class Lexer
         (TokenType.Multiplication, @"[\[\]*]"),
         (TokenType.Division, @"[\[\]/]"),
         (TokenType.Comparison_Op, @"==|>=|<=|>|<|="),
+        (TokenType.Concatenation_Op , @"@@|@"),
         (TokenType.Logic_Op, @"&&|\|\|"),
-        (TokenType.Symbol, @"[\[\]:{}""']"),
         (TokenType.StatementSeparator, @"[\[\];]"),
-        (TokenType.Comma, @"[\[\],]"),
-        (TokenType.Whitespace, @"\s+"),
-        (TokenType.Identifier, @"(?<="")([^""]*?)(?="")"),
+        (TokenType.Identifier, @"\b[a-zA-Z]+\b"),
         (TokenType.Unknown, @".")
         
     };

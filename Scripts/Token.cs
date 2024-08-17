@@ -18,8 +18,8 @@ namespace Compiler
     }
     public enum TokenType
     {
-      Keyword , Number , Plus , Minus , Multiplication , Division , Comparison_Op , Logic_Op , Symbol , StatementSeparator , Comma ,
-      Whitespace , Identifier , Unknown , EOF
+      Keyword , Number , Plus , Minus , Multiplication , Division , Comparison_Op , Logic_Op , Concatenation_Op , Symbol , StatementSeparator , Comma ,
+      Whitespace , Identifier , Text ,Unknown , EOF
     }
     public class TokenValues
     {
@@ -36,6 +36,7 @@ namespace Compiler
         public string Card{get; private set;}
         public string Type { get; private set; }
         public string Name { get; private set; }
+        public string Picture {get; private set;}
         public string Faction { get; private set; }
         public string Power { get; private set; }
         public string Range { get; private set; }
@@ -50,6 +51,10 @@ namespace Compiler
         public string Greater_Equal {get; private set;}
         public string Equal_Equal {get; private set;}
         public string Equal {get; private set;}
+        public string Concatenation {get; private set;}
+        public string Spaced_Concatenation{get;private set;}
+        public string And {get; private set;}
+        public string Or {get; private set;}
         public string StatementSeparator {get; private set;}
 
 
@@ -82,6 +87,10 @@ namespace Compiler
             Greater_Equal = ">=";
             Equal_Equal = "==";
             Equal = "=";
+            Concatenation = "@";
+            And = "&&";
+            Or = "||";
+            Spaced_Concatenation = "@@";
         }
     }
 }

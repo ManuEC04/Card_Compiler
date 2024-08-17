@@ -12,6 +12,6 @@ class Program
          List<Token> tokens = lexer.Tokenize(input);
          Parser parser = new Parser(tokens);
 
-         parser.ParseOperations();
+         parser.ParseProgram();
 }
 }
