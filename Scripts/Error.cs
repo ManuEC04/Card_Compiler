@@ -6,6 +6,14 @@ public class CompilingError
 
         public int Position{get; private set;}
 
+        public void PrintErrors(List<CompilingError> Errors)
+        {
+           foreach(CompilingError error in Errors)
+           {
+             Console.WriteLine(error.Argument + " " + "at line" + " " + error.Position);
+           }
+        }
+
         public CompilingError(int position, ErrorCode code, string argument)
         {
             this.Code = code;

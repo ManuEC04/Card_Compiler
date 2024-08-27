@@ -12,7 +12,7 @@ namespace Compiler
     public abstract class ASTNode
     {
         public int Position {get; set;}
-        public abstract bool CheckSemantic();
+        public abstract bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope);
         public abstract void Evaluate();
         
     }

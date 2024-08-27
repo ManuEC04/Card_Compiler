@@ -11,10 +11,13 @@ public class Lexer
     {
         (TokenType.Whitespace, @"\s+"),
         (TokenType.Comma, @"[\,]"),
-        (TokenType.Symbol, @"[\[\]:{}""']"),
+        (TokenType.Symbol, @"[\[\]:{}""'().]"),
         (TokenType.Text, "(?<=\")(.*?)(?=\")"),
-        (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range)\b"),
+        (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range|params|action
+        |targets|selector|source|single|predicate|PostAction|context|for|while)\b"),
+        (TokenType.Boolean, @"\b(true|false)\b"),
         (TokenType.Number, @"\b\d+(\.\d+)?\b"),
+        (TokenType.DoublePlus, @"\+\+"), 
         (TokenType.Plus, @"[\[\]+]"),
         (TokenType.Minus, @"[\[\]-]"),
         (TokenType.Multiplication, @"[\[\]*]"),
@@ -23,42 +26,49 @@ public class Lexer
         (TokenType.Concatenation_Op , @"@@|@"),
         (TokenType.Logic_Op, @"&&|\|\|"),
         (TokenType.StatementSeparator, @"[\[\];]"),
-        (TokenType.Identifier, @"\b[a-zA-Z]+\b"),
-        (TokenType.Unknown, @".")
+        (TokenType.Identifier, @"\b[a-zA-Z]+\b")
         
     };
 
-    public List<Token> Tokenize(string input)
+    public List<Token> Tokenize(string input , List<CompilingError> Errors)
     {
         var tokens = new List<Token>();
-        int position = 0;
-
-        while (position < input.Length)
-        {
+            int linenumber = 0;
+            foreach(string line in File.ReadLines(input))
+            {
+                int position = 0;
+                while(position < line.Length)
+                {
             bool matchFound = false;
 
             foreach (var (type, pattern) in tokenDefinitions)
             {
                 var regex = new Regex(pattern);
-                var match = regex.Match(input, position);
+                var match = regex.Match(line, position);
 
                 if (match.Success && match.Index == position)
                 {
                     if (type != TokenType.Whitespace) // Ignore whitespaces
                     {
-                        tokens.Add(new Token(type, match.Value , position));
-                        Console.WriteLine("TYPE"+ ":"+ " "+ type + " " + "VALUE"+ ":" + " "+ match.Value);
+                        tokens.Add(new Token(type, match.Value , linenumber));
+                        Console.WriteLine("TYPE"+ ":"+ " "+ type + " " + "VALUE"+ ":" + " "+ match.Value + " "+"POSITION" + ":" + " " + linenumber);
                     }
                     position += match.Length;
                     matchFound = true;
                     break;
+                    
                 }
+                
             }
             if (!matchFound)
             {
-              throw new Exception($"Unexpected character at line {position}");
+              Errors.Add(new CompilingError(linenumber , ErrorCode.Unknown , "Unknow character"));
             }
+            }
+            linenumber++;
+            
         }
+        
         tokens.Add(new Token(TokenType.EOF , "END", tokens.Count - 1));
         return tokens;
     }
