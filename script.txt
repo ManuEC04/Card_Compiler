@@ -1,0 +1,38 @@
+
+Card
+{
+Range: ["Melee" , "Ranged"],
+Power: 10*2*(2+5),
+Type: "Oro",
+Faction: "Northern Realms",
+Name: "Calamardo",
+OnActivation: 
+[
+   {
+Effect:
+{
+ Name: "Damage",
+ Amount: 5,
+},
+Selector:
+{
+   Source: "board",
+   Single: false,
+   Predicate: (unit) => unit.Faction == "Northern" @@ "Realms"
+},
+PostAction: 
+{
+   Type: "ReturnToDeck",
+   Selector:
+   {
+      Source:"parent",
+      Single: false,
+      Predicate: (unit) => unit.Faction == "Northern" @@ "Realms"
+   },
+}
+},
+{
+   Effect: "Dsada"
+}
+]
+}
