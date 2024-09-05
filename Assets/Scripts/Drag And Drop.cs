@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class DragAndDrop : MonoBehaviour , IDragHandler, IDropHandler
 {
-  public bool IsOverDropZone {get;set;}
+  public bool IsOverDropZone {get; set;}
   Canvas canvas;
   RectTransform rectTransform;
 

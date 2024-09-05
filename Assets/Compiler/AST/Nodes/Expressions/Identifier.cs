@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Diagnostics;
 namespace Compiler
 {
     public class Identifier : Expression
@@ -9,11 +10,23 @@ namespace Compiler
 
         public override void Evaluate()
         {
-           
+            UnityEngine.Debug.Log(Value);
+           Context context = Context.Instance;
+           Expression expr = context.scope.Declaration[(string)Value];
+           expr.Evaluate();
+           Value = expr.Value;
+           UnityEngine.Debug.Log(Value);
         }
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
-           return true;
+            UnityEngine.Debug.Log("Chequeo semantico y obtengo el valor del identifier");
+            if(scope.Declaration[(string)Value] !=null)
+            {
+                scope.Declaration[(string)Value].Evaluate();
+                Value = scope.Declaration[(string)Value].Value;
+                return true;
+            }
+           return false;
         }
 
         public Identifier(object Value , Expression Expression , ExpressionType Type , int Position) : base(Value , ExpressionType.Identifier , Position)

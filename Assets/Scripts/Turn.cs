@@ -11,12 +11,17 @@ public class Turn : MonoBehaviour
     public bool EndTurn;
     
 
-    void ResetTurnValues()
+    public void StartMyTurn()
     {
-        StartTurn = false;
+        StartTurn = true;
         DrawExecuted = false;
         PlayMade = false;
         Passed = false;
         EndTurn = false;
+    }
+    public void PassTurn()
+    {
+          StartTurn = false;
+          EndTurn = true;
     }
 }

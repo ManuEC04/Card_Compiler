@@ -18,7 +18,7 @@ namespace Compiler
     }
     public enum TokenType
     {
-      Keyword , Number , DoublePlus , Plus , Minus , Multiplication , Division , Comparison_Op , Logic_Op , Concatenation_Op , Symbol , StatementSeparator , Comma ,
+      Keyword , Number , DoublePlus , DoubleMinus , EqualPlus , EqualMinus ,Plus , Minus , Multiplication , Division , Comparison_Op , Logic_Op , Concatenation_Op , Symbol , StatementSeparator , Comma ,
       Whitespace , Identifier , Text , Boolean , Unknown , EOF
     }
     public class TokenValues

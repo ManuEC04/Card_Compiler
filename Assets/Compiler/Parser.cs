@@ -6,6 +6,11 @@ using System.Runtime.ConstrainedExecution;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System;
+using UnityEditor.Experimental.GraphView;
+using System.Diagnostics;
+using UnityEngine;
+using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 namespace Compiler
 {
     public class Parser
@@ -23,10 +28,11 @@ namespace Compiler
             this.tokens = tokens;
             this.Errors = Errors;
         }
-       
+
         //MAIN METHOD
         public AST ParseProgram()
         {
+
             AST tree = new AST();
             while (!isAtEnd())
             {
@@ -34,15 +40,22 @@ namespace Compiler
                 {
                     Card Card = ParseCard();
                     Scope scope = new Scope();
-                    if (Card.CheckSemantic(context, Errors, scope))
-                    {
                         tree.Nodes.Add(Card);
-                    }
+            
                 }
                 else if (match(Checker.effect))
                 {
                     Effect? Effect = ParseEffect();
-                    tree.Nodes.Add(Effect);
+                    if(Effect!=null)
+                    {
+
+                   
+                    UnityEngine.Debug.Log(Effect.Name.Value);
+                    Context context =Context.Instance;
+                    context.Effects.Add((string)Effect.Name.Value , Effect);
+                    UnityEngine.Debug.Log(context.Effects.Count);
+                     }
+                     else {UnityEngine.Debug.Log("El efecto es nulo");}
                 }
                 else
                 {
@@ -58,6 +71,7 @@ namespace Compiler
             }
 
             return tree;
+
         }
 
         //PARSING EFFECTS
@@ -73,14 +87,17 @@ namespace Compiler
                 if (match(Checker.Name))
                 {
                     effect.Name = ParseTextProperties();
+                    UnityEngine.Debug.Log("Parsea el name");
                 }
                 else if (match(Checker.Params))
                 {
                     effect.Params = ParseParams();
+                    UnityEngine.Debug.Log("Parsea Params");
                 }
                 else if (match(Checker.Action))
                 {
                     effect.Action = ParseAction();
+                    UnityEngine.Debug.Log("Parsea Action");
                 }
             }
             if (!match(Checker.ClosedCurlyBraces))
@@ -369,7 +386,7 @@ namespace Compiler
             {
                 Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, "{ expected"));
             }
-            while (lookahead(Checker.Type) || lookahead(Checker.Selector))
+            while (lookahead(Checker.Type) || lookahead(Checker.Selector) || lookahead(Checker.PostAction))
             {
                 if (match(Checker.Type))
                 {
@@ -436,11 +453,9 @@ namespace Compiler
         }
         Predicate ParsePredicate()
         {
-            Property property = new Property("", peek().Position);
-
             if (!match(Checker.Points))
             {
-                Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
+               // Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
             }
             if (!match(Checker.OpenParenthesis))
             {
@@ -462,22 +477,18 @@ namespace Compiler
             {
                 Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, "> expected"));
             }
-            if (!matchtype(TokenType.Identifier))
-            {
-                Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, "An identifier was expected"));
-            }
+            Identifier identifier = ParseIdentifier();
+            Property property = new Property("", identifier, peek().Position);
             if (match(Checker.Point))
             {
-
                 if (matchtype(TokenType.Keyword))
                 {
-                    property = new Property(previous().Value.ToString(), peek().Position);
+                    property = new Property(previous().Value.ToString(), identifier, peek().Position);
                 }
-
             }
             Back(); // We go back because the NodeComparation analyze first the left part of the expression
             Expression comparation = ParseComparation();
-            return new Predicate(property, (Comparation)comparation);
+            return new Predicate(property, (Comparation)comparation, peek().Position);
         }
 
         //PARSING OTHER NODES
@@ -528,66 +539,171 @@ namespace Compiler
         List<Expression> ParseInstructions()
         {
             List<Expression> Instructions = new List<Expression>();
-            while (matchtype(TokenType.Identifier))
+            UnityEngine.Debug.Log("Empieza a parsear instrucciones");
+            while (looktype(TokenType.Identifier) || looktype(TokenType.Keyword))
             {
+                if (match(Checker.While))
+                {
+                    Instructions.Add(ParseWhile());
+                }
+                else if (match(Checker.For))
+                {
+                    Instructions.Add(ParseFor());
+                }
+                else{advance();}
 
                 if (lookahead(Checker.Point))
                 {
+                    UnityEngine.Debug.Log("Encontro una propiedad");
                     Back();
-                    Instructions.Add(ParseProperty());
+                    Expression property = ParseProperty();
+                    UnityEngine.Debug.Log("Termino la propiedad");
+                    UnityEngine.Debug.Log(peek().Value);
+                    if (match(Checker.Equal) || matchtype(TokenType.EqualMinus) || matchtype(TokenType.EqualPlus))
+                    {
+                        UnityEngine.Debug.Log("Aqui detecta que lo que viene es una asignacion");
+                        Token op = previous();
+                        Expression right = ParsingExpressions();
+                        Asignation asignation = new Asignation(property , right , op.Value , peek().Position);
+                        Instructions.Add(asignation);
+                        checkend(); 
+                    }
+                    else 
+                    { UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
+                    UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
+                    Instructions.Add(property);
+                    checkend();
+                    }
                 }
-                else
+                else if (lookahead(Checker.Equal))
                 {
+                    UnityEngine.Debug.Log(peek().Value);
                     Back();
+                    UnityEngine.Debug.Log(peek().Value);
                     Instructions.Add(ParseDeclaration());
+                    checkend();
                 }
+
             }
-            if (match(Checker.While))
-            {
-                Instructions.Add(ParseWhile());
-            }
-            if (match(Checker.For))
-            {
-                Instructions.Add(ParseFor());
-            }
+            UnityEngine.Debug.Log("Ya va a retornar las instrucciones");
             return Instructions;
         }
         Expression ParseProperty()
         {
-            Expression? argument = null;
-            string Property = "";
+            UnityEngine.Debug.Log("Parsea la propiedad");
+            UnityEngine.Debug.Log(peek().Value);
 
-            while (matchtype(TokenType.Identifier) || matchtype(TokenType.Keyword))
+            Identifier? identifier = ParseIdentifier();
+            Expression? Argument = null;
+            string Sintaxys = null;
+            string CardContainer = null;
+            string Method = null;
+            if (lookahead(Checker.context) || lookahead(Checker.target))
             {
-                Property += previous().Value;
-                if (match(Checker.Point))
-                {
-                    Property += ".";
-                }
+                UnityEngine.Debug.Log("Encontro a context o a target");
+                Sintaxys = peek().Value;
+                advance();
+            }
+            if (match(Checker.Point))
+            {
+                UnityEngine.Debug.Log("Encuentra el CardContainer");
+                CardContainer = peek().Value;
+                advance();
+                
+            }
+            if (match(Checker.Point))
+            {
+                UnityEngine.Debug.Log("Encuentra algun metodo");
+                Method = peek().Value;
+                advance();
             }
             if (match(Checker.OpenParenthesis))
             {
-                Property += "(";
-            }
-            if (matchtype(TokenType.Identifier))
-            {
-                if (lookahead(Checker.Point))
+                if (!match(Checker.ClosedParenthesis))
                 {
-                    argument = ParseProperty();
+                    Argument = ParsePropertyArgument();
                 }
-                Back();
-                argument = ParseIdentifier();
+                if(!match(Checker.ClosedParenthesis))
+                {
+                    Errors.Add(new CompilingError(Pos , ErrorCode.Expected , ") expected"));
+                }
             }
-            if (match(Checker.ClosedParenthesis))
+            UnityEngine.Debug.Log(peek().Value);
+            return new Property(Sintaxys, CardContainer, Method, identifier, Argument, peek().Position);
+
+
+            /*
+                        Expression? argument = null;
+                        string Property = "";
+                        Identifier identifier = ParseIdentifier();
+                        match(Checker.Point);
+                        while ( matchtype(TokenType.Keyword))
+                        {
+                            Property += previous().Value;
+                            if (match(Checker.Point))
+                            {
+                                Property += ".";
+                            }
+                        }
+                        if (match(Checker.OpenParenthesis))
+                        {
+                            Property += "(";
+                        }
+                        if (matchtype(TokenType.Identifier))
+                        {
+                            if (lookahead(Checker.Point))
+                            {
+                                argument = ParseProperty();
+                            }
+                            Back();
+                            argument = ParseIdentifier();
+                        }
+                        if (match(Checker.ClosedParenthesis))
+                        {
+                            Property += ")";
+                        }
+                        else
+                        {
+                            Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ") expected"));
+                        }
+                        checkend();
+                        return new Property(Property, identifier , argument, peek().Position);
+                        */
+
+        }
+        Expression? ParsePropertyArgument()
+        {
+            if(matchtype(TokenType.Identifier) || matchtype(TokenType.Keyword))
             {
-                Property += ")";
+              UnityEngine.Debug.Log("Detecta el identificador");
+              
+               if(lookahead(Checker.Point))
+               {
+                 Back();
+                  UnityEngine.Debug.Log("Sabe que es una propiedad");
+                 Expression property = ParseProperty();
+                  UnityEngine.Debug.Log("La parsea");
+                 return property;
+               }
+               Expression expr = ParseIdentifier();
+               return expr;
             }
-            else
+            else if (match(Checker.QuotationMark))
             {
-                Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ") expected"));
+                Expression expr = ParseConcatenation();
+                return expr;
             }
-            checkend();
-            return new Property(Property, argument, peek().Position);
+            else if (looktype(TokenType.Number))
+            {
+                Expression expr = ParseTerm();
+                return expr;
+            }
+            else if(lookahead(Checker.OpenParenthesis))
+            {
+                Expression expr = ParsePredicate();
+                return expr;
+            }
+            return null;
         }
         Declaration ParseDeclaration()
         {
@@ -603,6 +719,10 @@ namespace Compiler
                 return new Declaration(identifier, text, peek().Position);
             }
             Expression expr = ParsingExpressions();
+            UnityEngine.Debug.Log(expr.Value);  
+            Context context = Context.Instance;
+             context.scope.Declaration.Add((string)identifier.Value, expr);
+             UnityEngine.Debug.Log(identifier.Value);
             return new Declaration(identifier, expr, peek().Position);
         }
         Expression ParseConcatenation()
@@ -684,7 +804,6 @@ namespace Compiler
             }
             else if (peek().Type == TokenType.Symbol)
             {
-
                 Expression expr = ParseConcatenation();
                 return expr;
             }
@@ -806,6 +925,10 @@ namespace Compiler
         //AUXILIAR METHODS
         void checkend()
         {
+            if (lookahead(Checker.Equal) || lookahead(Checker.Minus) || lookahead(Checker.Plus))
+            {
+                return;
+            }
             if (!match(Checker.StatementSeparator))
             {
                 Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, "; expected"));

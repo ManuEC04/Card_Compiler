@@ -8,23 +8,19 @@ public class Compiling : MonoBehaviour
 {
     string path = @"e:\Yo\Manuel Universidad\Clases\Segundo Semestre\Compilador\Gwent++\script.txt";
     CardDatabase Database;
-    public GameObject prefab;
+   [SerializeField]GameObject prefab;
 
     // Start is called before the first frame update
     void Start()
     {
         Database = CardDatabase.Instance;
-        Debug.Log(Database.Cards.Count);
-        GameObject prefab = Resources.Load<GameObject>("Prefabs/Card");
-
     }
-
-
     public void CompilingProcess()
     {
         List<CompilingError> Errors = new List<CompilingError>();
         Lexer lexer = new Lexer();
         List<Token> tokens = lexer.Tokenize(path, Errors);
+        Scope scope = new Scope();
 
         foreach (Token token in tokens)
         {
@@ -32,15 +28,18 @@ public class Compiling : MonoBehaviour
         }
         Parser parser = new Parser(tokens, Errors);
         AST tree = parser.ParseProgram();
-
-        foreach(CompilingError error in Errors)
-        {
-           Debug.Log(error.Argument);
-        }
+        UnityEngine.Debug.Log(tree.Nodes.Count);
 
         foreach(ASTNode node in tree.Nodes)
         {
-            node.Evaluate();
+            if(node.CheckSemantic(Context.Instance , Errors ,scope))
+            {
+               node.Evaluate();
+            }     
+        }
+        foreach(CompilingError error in Errors)
+        {
+           Debug.Log(error.Argument);
         }
         //Showing the card on display
         Vector2 Position = new Vector2(1438, 0);
@@ -50,9 +49,14 @@ public class Compiling : MonoBehaviour
         newprefab.GetComponent<RectTransform>().localScale = new Vector2(0.7f,0.7f);
         GameObject Canvas = GameObject.Find("Canvas");
         newprefab.transform.SetParent(Canvas.transform , true);
-        SceneManager.LoadScene("Main");
-        
-
+    }
+    public void Next()
+    {
+       SceneManager.LoadScene("CardSelection");
+    }
+    public void Back()
+    {
+        Application.Quit();
     }
 
 }

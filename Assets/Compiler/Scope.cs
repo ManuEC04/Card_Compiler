@@ -6,11 +6,11 @@ namespace Compiler
     {
         public Scope Parent ;
 
-        public List<Declaration> Declaration;
+        public Dictionary<string , Expression> Declaration;
 
         public Scope()
         {
-            Declaration = new List<Declaration>();   
+            Declaration = new Dictionary<string, Expression>();   
         }
 
         public Scope CreateChild()

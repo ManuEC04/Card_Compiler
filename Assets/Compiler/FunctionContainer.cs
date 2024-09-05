@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
 namespace Compiler
 {
     public class FunctionContainer
     {
         public Dictionary<string, Delegate> Functions = new Dictionary<string, Delegate> { };
+        Context context = Context.Instance;
         public object Pop<T>(List<T> List)
         {
             T temp = List[0];
@@ -13,27 +16,39 @@ namespace Compiler
         }
         public void Shuffle<T>(List<T> list)
         {
-            Random rng = new Random();
-            int n = list.Count;
-            while (n > 1)
+           
+        }
+        public void Remove<T>(List<T> list, T value)
+        {
+            list.Remove(value);
+        }
+        public void SendBottom<T>(List<T> list, T value)
+        {
+            list.Add(value);
+        }
+        public void Push<T>(List<T> list, T value)
+        {
+            T temp = list[0];
+            int index = list.Count - 1;
+            list.Add(value);
+            list[0] = list[index];
+            list[index] = value;
+        }
+        public List<T> Find<T>(Predicate predicate, List<T> list)
+        {
+            List<T> returnlist = new List<T>();
+
+            foreach (T value in list)
             {
-                n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                predicate.Comparation.Evaluate();
+                if (predicate.Comparation.Right.Value.Equals(value))
+                {
+                    returnlist.Add(value);
+                }
             }
-        }
-        public string TriggerPlayer(Card card)
-        {
-           return "player1";
+            return returnlist;
         }
 
-        public void CreateFunctions()
-        {
-
-    
-        }
 
     }
 }

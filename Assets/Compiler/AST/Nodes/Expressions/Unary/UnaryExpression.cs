@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 namespace Compiler
 {
     public class UnaryExpression : Expression
@@ -36,6 +37,7 @@ namespace Compiler
                 temp--;
                 Value = temp;
             }
+            UnityEngine.Debug.Log("Evalua correctamente la expresion unaria");
      
         }
 

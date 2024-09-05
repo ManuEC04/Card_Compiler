@@ -3,10 +3,7 @@ using System.Collections.Generic;
 namespace Compiler
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using UnityEngine;
-
-
     public class Card : ASTNode
     {
         public Expression? Type { get; set; }
@@ -15,7 +12,6 @@ namespace Compiler
         public Expression? Power { get; set; }
         public List<Expression>? Range { get; set; }
         public OnActivation OnActivation { get; set; }
-
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
             if (Type == null || Name == null || Faction == null || Power == null || Range == null)
@@ -42,11 +38,11 @@ namespace Compiler
             if (Range.Count == 1)
             {
                 if (!((string)Range[0].Value == "FactionLeader" || (string)Range[0].Value == "Weather" || (string)Range[0].Value == "Increase"
-                ||(string)Range[0].Value == "Decoy" || (string)Range[0].Value == "Melee" || (string)Range[0].Value == "Ranged" || 
+                || (string)Range[0].Value == "Decoy" || (string)Range[0].Value == "Melee" || (string)Range[0].Value == "Ranged" ||
                 (string)Range[0].Value == "Siege"))
                 {
-                  Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "Invalid Range"));
-                  return false;
+                    Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "Invalid Range"));
+                    return false;
                 }
             }
             else
@@ -64,9 +60,7 @@ namespace Compiler
                     }
                 }
             }
-
             Context.Cards.Add((string)Name.Value, this);
-
             return true;
         }
         public override void Evaluate()
@@ -80,8 +74,8 @@ namespace Compiler
             {
                 RangeValues.Add((string)expr.Value);
             }
-            new UnityCard((string)Type.Value, (string)Name.Value, (string)Faction.Value, (double)Power.Value, RangeValues, Resources.Load<Sprite>("default"));
-            // OnActivation.Evaluate();
+            Debug.Log(OnActivation.Effects[0].Selector.Single.Value);
+            new UnityCard((string)Type.Value, (string)Name.Value, (string)Faction.Value, (double)Power.Value, RangeValues.ToArray(), Resources.Load<Sprite>("default"), OnActivation);
         }
         public Card(int Position)
         {

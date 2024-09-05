@@ -1,28 +1,32 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using UnityEngine;
 
-public class Deck : MonoBehaviour
+public class Deck : MonoBehaviour, ICardContainer
 {
-    public List<GameObject> PlayerDeck;
-    [SerializeField]private GameObject prefab;
-
+    [SerializeField] List<GameObject> cards;
+    [SerializeField] private GameObject prefab;
 
     void Awake()
     {
         CardDatabase Data = CardDatabase.Instance;
-        Data.CreateNordickDeck();
-        UnityEngine.Vector3 Position = new UnityEngine.Vector3(0,0,0);
-        foreach(UnityCard unityCard in Data.NordickDeck)
+        UnityEngine.Vector3 Position = new UnityEngine.Vector3(0, 0, 0);
+        foreach (UnityCard unityCard in Data.PlayerDeck)
         {
-            GameObject card = Instantiate(prefab , Position , UnityEngine.Quaternion.identity);
-            card.GetComponent<RectTransform>().localScale = new UnityEngine.Vector2(0.16f , 0.16f);
+            GameObject card = Instantiate(prefab, Position, UnityEngine.Quaternion.identity, gameObject.transform);
+            card.GetComponent<RectTransform>().localScale = new UnityEngine.Vector2(0.16f, 0.16f);
             card.GetComponent<CardOutput>().SetValues(unityCard);
-            card.transform.SetParent(gameObject.transform,true);
-            PlayerDeck.Add(card);
+            string id = GetComponentInParent<Player>().Id;
+            card.GetComponent<CardOutput>().PlayerId = id;
+            cards.Add(card);
         }
-        
-        
     }
+    public List<GameObject> GetCardList()
+    {
+        return cards;
+    }
+
 }

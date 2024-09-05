@@ -17,7 +17,7 @@ namespace Compiler
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {
-           if(scope.Declaration.Contains(this) || Expression == null)
+          /* if(scope.Declaration.Contains(this) || Expression == null)
            {
               Errors.Add(new CompilingError (Position , ErrorCode.Invalid , "You must assign a value for this identifier first"));
               return false;
@@ -26,7 +26,9 @@ namespace Compiler
            { 
               scope.Declaration.Add(this);
            }
+           */
            return true;
+           
         }
 
         public Declaration(Identifier Identifier , Expression Expression , int Position) : base("", ExpressionType.Declaration , Position)

@@ -1,47 +1,73 @@
 
 using System.Collections.Generic;
 using System;
+using UnityEngine;
+using System.Diagnostics;
+using System.Linq;
 namespace Compiler
 {
-    public class Predicate : ASTNode
+    public class Predicate : Expression
     {
-       public bool Value {get; set;}
+       public override object Value {get;set;}
        public  Property Property {get; set;}
        public Comparation Comparation {get; set;}
-        public Predicate(Property property , Comparation comparation)
-        {
-            Property = property;
+        public Predicate(Property property , Comparation comparation , int Position) : base ("",ExpressionType.Predicate ,  Position)
+
+        {   Property = property;
             Comparation = comparation;
+            this.Position = Position;
         }
 
         public override void Evaluate()
         {
             Property.Evaluate();
+            Comparation.Right.Evaluate();
             Comparation.Left.Value = Property.Value;
-            Func <Expression , Expression , bool> Equal =(a , b) => a == b;
-            Value = Equal(Comparation.Left , Comparation.Right);
         }
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
             return true && Property.CheckSemantic(Context , Errors , scope) && Comparation.CheckSemantic(Context , Errors , scope);
         }
-        public bool VerifyPredicate(Expression Left)
+        public bool VerifyPredicate(UnityCard card)
         {
-            Comparation.Left = Left;
-            Comparation.Evaluate();
-            if((bool)Comparation.Value == true)
+           switch(Property.Sintaxys)
+           {
+            case "Faction": 
+
+            if(card.Faction == (string)Comparation.Right.Value)
+            {
+                UnityEngine.Debug.Log("Verifica el faction");
+               return true;
+            }
+            return false;
+    
+            case "Type":   
+            if(card.Type == (string)Comparation.Right.Value)
+            {
+               return true;
+            }
+            return false;
+
+            case "Power":   
+
+            if(card.Power == (double)Comparation.Right.Value)
+            {
+               return true;
+            }
+            return false;
+
+            case "Range" : 
+
+            if(card.Range.ToList() == Comparation.Right.Value)
             {
                 return true;
             }
             return false;
-        }
-        public void PrintPredicate()
-        {
-             Console.WriteLine("Este es el valor del predicado" + " " + Property.Value);
-             Comparation.Evaluate();
-             Console.WriteLine("Esta es la parte izquierda del predicado" + " " + Comparation.Left.Value);
-             Console.WriteLine("Esta es la parte derecha del predicado" + " " + Comparation.Right.Value);
-
+ 
+            default: UnityEngine.Debug.Log("Carta no contiene la propiedad especificada"); break;
+            
+           }
+           return false;
         }
 
     }

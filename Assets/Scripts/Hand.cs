@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hand : MonoBehaviour
+public class Hand : MonoBehaviour , ICardContainer
 {
-   public List<GameObject> PlayerHand;
+   private List<GameObject> Cards = new List<GameObject>();
+   public List<GameObject> GetCardList()
+   {
+    return Cards;
+   }
     void Start()
     {
         
@@ -17,7 +21,7 @@ public class Hand : MonoBehaviour
     }
     public void CheckHandCount()
     {
-        if(PlayerHand.Count > 9)
+        if(Cards.Count > 9)
         {
             //Here we send the cards to the graveyard
         }

@@ -15,10 +15,15 @@ public class Lexer
         (TokenType.Symbol, @"[\[\]:{}""'().]"),
         (TokenType.Text, "(?<=\")(.*?)(?=\")"),
         (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range|params|action
-        |targets|selector|source|single|predicate|PostAction|context|for|while|effect|Effect)\b"),
+        |targets|selector|source|single|predicate|PostAction|context|for|while|effect
+        |Effect|Hand|Deck|Field|Graveyard|HandOfPlayer|DeckOfPlayer|FieldOfPlayer|GraveyardOfPlayer|
+        Add|Suffle|Push|Pop|Remove|SendBottom|Find)\b"),
         (TokenType.Boolean, @"\b(true|false)\b"),
         (TokenType.Number, @"\b\d+(\.\d+)?\b"),
-        (TokenType.DoublePlus, @"\+\+"), 
+        (TokenType.DoublePlus, @"\+\+"),
+        (TokenType.DoubleMinus, @"\-\-"),  
+        (TokenType.EqualMinus , @"-="),
+        (TokenType.EqualPlus , @"\+="),
         (TokenType.Plus, @"[\[\]+]"),
         (TokenType.Minus, @"[\[\]-]"),
         (TokenType.Multiplication, @"[\[\]*]"),

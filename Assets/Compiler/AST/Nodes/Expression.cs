@@ -36,6 +36,8 @@ namespace Compiler
         Unary,
         Concatenation,
         Identifier, 
+        Asignation,
+        Predicate,
         Property,
         Declaration,
         Merge,

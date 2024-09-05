@@ -1,10 +1,12 @@
 
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 namespace Compiler
 {
     public class DeclaredEffect : ASTNode
     {
-        public Expression? Name { get; set; }
+        public Expression Name { get; set; }
         public List <Expression> Params { get; set; }
         public Selector? Selector { get; set; }
         public PostAction? PostAction { get; set; }
@@ -12,7 +14,13 @@ namespace Compiler
 
         public override void Evaluate()
         {
-
+            if(Selector !=null)
+            {
+              //Selector.Evaluate();
+              Debug.Log("Selector no es null");
+            }
+            else{Debug.Log("No hay selector");}
+              
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {

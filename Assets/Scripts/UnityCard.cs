@@ -1,17 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Compiler;
 using UnityEngine;
 
 public class UnityCard 
 {
-    public string Type {get; set;}
-    public string Name {get; set;}
-    public string Faction {get;set;}
-    public double Power {get;set;}
-    public List<string> Range {get;set;}
+    public string Type {get; private set;}
+    public string Name {get; private set;}
+    public string Faction {get; private set;}
+    public double Power {get; private set;}
+    public string[] Range {get;private set;}
+    public OnActivation OnActivation {get;private set;}
     public Sprite Picture;
-    public UnityCard(string Type , string Name , string Faction , double Power , List<string>Range , Sprite Picture)
+    public UnityCard(string Type , string Name , string Faction , double Power , string[]Range , Sprite Picture , OnActivation OnActivation)
     {
         this.Type = Type;
         this.Name = Name;
@@ -19,9 +21,22 @@ public class UnityCard
         this.Power = Power;
         this.Range = Range;
         this.Picture = Picture;
+        this.OnActivation = OnActivation;
+        Context context = Context.Instance;
         CardDatabase Database = CardDatabase.Instance;
         Database.Cards.Add(this);
     }
-    public UnityCard(){}
+        public UnityCard(string Type , string Name , string Faction , double Power , string[]Range , Sprite Picture)
+    {
+        this.Type = Type;
+        this.Name = Name;
+        this.Faction = Faction;
+        this.Power = Power;
+        this.Range = Range;
+        this.Picture = Picture;
+        Context context = Context.Instance;
+        CardDatabase Database = CardDatabase.Instance;
+        Database.Cards.Add(this);
+    }
 
 }
