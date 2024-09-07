@@ -24,6 +24,10 @@ namespace Compiler
             Comparation.Right.Evaluate();
             Comparation.Left.Value = Property.Value;
         }
+          public override void ResetValues()
+        {
+            
+        }
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
             return true && Property.CheckSemantic(Context , Errors , scope) && Comparation.CheckSemantic(Context , Errors , scope);

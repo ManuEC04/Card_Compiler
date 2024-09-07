@@ -15,6 +15,10 @@ namespace Compiler
                 Value = Expression.Value;
             }
         }
+          public override void ResetValues()
+        {
+            
+        }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {
           /* if(scope.Declaration.Contains(this) || Expression == null)

@@ -20,5 +20,9 @@ namespace Compiler
             Value = value;
             Term = term;
         }
+          public override void ResetValues()
+        {
+            
+        }
     }
 }

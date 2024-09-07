@@ -3,17 +3,22 @@ namespace Compiler
 {
     public class Comparation : BinaryExpression
     {
+        public string op = null;
         public override void Evaluate()
         {
+            if(op !=null)
+            {
+                Value = op;
+            }
             Left.Evaluate();
             Right.Evaluate();
             switch (Value)
             {
-                case ">=": Value = (double)Left.Value >= (double)Right.Value; break;
-                case ">": Value = (double)Left.Value > (double)Right.Value; break;
-                case "<=": Value = (double)Left.Value <= (double)Right.Value; break;
-                case "<": Value = (double)Left.Value < (double)Right.Value; break;
-                case "==": Value = Left.Value == Right.Value; break;
+                case ">=": op = ">=";Value = (double)Left.Value >= (double)Right.Value; break;
+                case ">": op = ">";Value = (double)Left.Value > (double)Right.Value; break;
+                case "<=": op = "<=";Value = (double)Left.Value <= (double)Right.Value; break;
+                case "<": op = "<";Value = (double)Left.Value < (double)Right.Value; break;
+                case "==": op = "==";Value = Left.Value == Right.Value; break;
             }
         }
         public Comparation(Expression left, Expression right, object value, int position) : base(value, left, right, ExpressionType.Boolean, position)

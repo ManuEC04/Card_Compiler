@@ -16,10 +16,11 @@ public class CardOutput : MonoBehaviour
     [SerializeField] UnityEngine.UI.Text Description;
     [SerializeField] UnityEngine.UI.Text Power;
     double powervalue;
-    public double PowerValue { get { return powervalue; } }
+    public double PowerValue { get { return powervalue; } set{powervalue = value;}}
     [SerializeField] Image Type;
     [SerializeField] Image Range;
     public bool OnHand { get; set; }
+    bool setdone;
     public void SetValues(UnityCard Set)
     {
         card = Set;
@@ -30,6 +31,10 @@ public class CardOutput : MonoBehaviour
         Description.text = "";
         powervalue = card.Power;
         Power.text = PowerValue.ToString();
+    }
+    public void UpdateProperties()
+    {
+          Power.text = PowerValue.ToString();
     }
     public void ActivateEffect()
     {

@@ -15,7 +15,7 @@ public class Lexer
         (TokenType.Symbol, @"[\[\]:{}""'().]"),
         (TokenType.Text, "(?<=\")(.*?)(?=\")"),
         (TokenType.Keyword, @"(?i)\b(card|type|name|faction|power|range|params|action
-        |targets|selector|source|single|predicate|PostAction|context|for|while|effect
+        |targets|target|selector|source|single|predicate|PostAction|context|for|while|effect
         |Effect|Hand|Deck|Field|Graveyard|HandOfPlayer|DeckOfPlayer|FieldOfPlayer|GraveyardOfPlayer|
         Add|Suffle|Push|Pop|Remove|SendBottom|Find)\b"),
         (TokenType.Boolean, @"\b(true|false)\b"),

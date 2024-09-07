@@ -16,11 +16,25 @@ namespace Compiler
             Argument.Evaluate();
             while ((bool)Argument.Value)
             {
+                UnityEngine.Debug.Log("Estamos en el while y esto vale el argument " + " " + Argument.Value);
                 foreach (Expression expr in Instructions)
                 {
                     expr.Evaluate();
                 }
+                Argument.Evaluate();
+                UnityEngine.Debug.Log("Cierra un while");
+                UnityEngine.Debug.Log(Argument.Value);
             }
+        }
+        public override void ResetValues()
+        {
+            foreach (Expression expr in Instructions)
+            {
+                expr.ResetValues();
+                
+            }
+            UnityEngine.Debug.Log("Vamos a resetear el argument del while");
+            Argument.ResetValues();
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
@@ -46,12 +60,22 @@ namespace Compiler
         public override void Evaluate()
         {
             Context context = Context.Instance;
-            foreach (GameObject target in context.targets)
+            for(int i = 0 ; i < context.targets.Count ; i++)
             {
                 foreach (Expression ins in Instructions)
                 {
                     ins.Evaluate();
                 }
+                ResetValues();
+                context.targets[0].GetComponent<CardOutput>().UpdateProperties();
+                context.targets.RemoveAt(0);
+            }
+        }
+        public override void ResetValues()
+        {
+            foreach (Expression ins in Instructions)
+            {
+                ins.ResetValues();
             }
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)

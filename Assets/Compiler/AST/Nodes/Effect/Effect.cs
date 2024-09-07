@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEngine;
 
 namespace Compiler
 {
@@ -13,14 +14,16 @@ namespace Compiler
         {
             if (Action != null)
             {
-                foreach (Expression expr in Action)
-                {
-                    UnityEngine.Debug.Log("Se ejecuta un action");
-                    UnityEngine.Debug.Log(Action.Count);
-                    expr.Evaluate();
-                }
+
+                    foreach (Expression expr in Action)
+                    {
+                        UnityEngine.Debug.Log("Se ejecuta un action");
+                        UnityEngine.Debug.Log(Action.Count);
+                        expr.Evaluate();
+                        expr.ResetValues();
+                    }
             }
-            else 
+            else
             {
                 UnityEngine.Debug.Log("Actions da null");
             }

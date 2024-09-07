@@ -10,5 +10,9 @@ namespace Compiler
         {
             Value = "";
         }
+          public override void ResetValues()
+        {
+            
+        }
     }
 }

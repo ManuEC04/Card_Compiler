@@ -18,6 +18,7 @@ namespace Compiler
         public override object Value { get; set; }
         FunctionContainer functions = new FunctionContainer();
         Context context = Context.Instance;
+        bool evaluated;
         public override void Evaluate()
         {
             UnityEngine.Debug.Log(Sintaxys + "." + CardContainer + Method);
@@ -82,12 +83,33 @@ namespace Compiler
             }
             else if (Sintaxys == "target")
             {
-                Value = Context.Instance.targets[0];
+                if(!evaluated)
+                {
+                    Value = context.targets[0].GetComponent<CardOutput>();
+                }
+                
                 switch(CardContainer)
                 {
-                    case"Power": UnityEngine.Debug.Log("Detecto que la propiedad es el power");break;
+                    case"Power": UnityEngine.Debug.Log("Detecto que la propiedad es el power");
+                    
+                    if(!evaluated)
+                    {
+                        Value = context.targets[0].GetComponent<CardOutput>().PowerValue; 
+                        evaluated = true;
+                    }
+                    else 
+                    {
+                        context.targets[0].GetComponent<CardOutput>().PowerValue = (double)Value; 
+                    }
+                    UnityEngine.Debug.Log("Aqui te imprimo el power" + Value);
+                    break;
                 }
             }
+        }
+        public override void ResetValues()
+        {
+            evaluated = false;
+            Value = "";
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {

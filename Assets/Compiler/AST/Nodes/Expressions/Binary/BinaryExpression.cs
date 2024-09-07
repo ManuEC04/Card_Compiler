@@ -18,6 +18,12 @@ namespace Compiler
              Errors.Add(new CompilingError(Position , ErrorCode.Invalid , "Invalid expression"));
             return false;
         }
+         public override void ResetValues()
+        {
+            Left.ResetValues();
+            Right.ResetValues();
+            UnityEngine.Debug.Log("Se resetean los valores");
+        }
 
         public BinaryExpression(object value , Expression left , Expression right , ExpressionType type , int position ):base(value , type , position)
         {

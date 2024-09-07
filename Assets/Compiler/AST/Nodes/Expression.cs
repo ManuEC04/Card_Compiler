@@ -7,6 +7,7 @@ namespace Compiler
         public abstract object Value { get; set; }
         public ExpressionType Type { get; protected set; }
         public override void Evaluate() { }
+        public abstract void ResetValues();
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
             return true;

@@ -7,6 +7,10 @@ namespace Compiler
         {
             return true;
         }
+          public override void ResetValues()
+        {
+            
+        }
         public AtomExpression(object value, ExpressionType type, int position) : base(value, type, position) { }
     }
 }
