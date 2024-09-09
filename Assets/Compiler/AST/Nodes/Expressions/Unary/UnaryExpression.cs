@@ -25,7 +25,9 @@ namespace Compiler
         }
           public override void ResetValues()
         {
-            done = false;
+            UnityEngine.Debug.Log("Se resetea la expresion unaria");
+            Expr.ResetValues();
+            Value = Expr.Value;
         }
         public override void Evaluate()
         {
@@ -34,7 +36,7 @@ namespace Compiler
              Expr.Evaluate();
              done = true;
             }
-            UnityEngine.Debug.Log(Value);
+            UnityEngine.Debug.Log("Este es el valor de la expression dentro de la unaria" + Value);
             if((string)op == "++")
             {
                 double temp = (double)Value;

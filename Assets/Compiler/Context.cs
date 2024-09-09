@@ -6,8 +6,6 @@ namespace Compiler
 {
     public class Context
     {
-        Game game = Game.Instance;
-        public Game MyGame { get { return game; }}
         public Scope scope {get;set;}
         public Dictionary<string, Card> Cards { get; set; }
         public Dictionary<string, Effect> Effects { get; set; }
@@ -35,26 +33,36 @@ namespace Compiler
         }
         public Player GetPlayer(string id)
         {
+            Game game = Game.Instance;
             return game.Players[id];
         }
         //Some Methods of the context
         public List<GameObject> HandOfPlayer(string id)
         {
+            Game game = Game.Instance;
             Player player = game.Players[id];
             return player.Hand.GetCardList();
         }
         public List<GameObject> DeckOfPlayer(string id)
         {
+            Game game = Game.Instance;
             Player player = game.Players[id];
             return player.Deck.GetCardList();
         }
+        public List<GameObject> GraveyardOfPlayer(string id)
+        {
+            Game game = Game.Instance;
+            Player player = game.Players[id];
+            return player.Graveyard.GetCardList();
+        }
         public string TriggerPlayer()
         {
-            if (MyGame.Player1.GetComponentInChildren<Turn>().StartTurn)
+            Game MyGame = Game.Instance;
+            if (MyGame.Player1.GetComponent<Player>().GetComponentInChildren<Turn>().StartTurn)
             {
                 return MyGame.Player1.GetComponent<Player>().Id;
             }
-            return MyGame.Player2.GetComponent<Player>().Id;
+            return MyGame.Player2.GetComponent<Player>().GetComponent<Player>().Id;
         }
 
     }

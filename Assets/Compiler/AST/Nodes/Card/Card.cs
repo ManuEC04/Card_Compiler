@@ -74,7 +74,6 @@ namespace Compiler
             {
                 RangeValues.Add((string)expr.Value);
             }
-            Debug.Log(OnActivation.Effects[0].Selector.Single.Value);
             new UnityCard((string)Type.Value, (string)Name.Value, (string)Faction.Value, (double)Power.Value, RangeValues.ToArray(), Resources.Load<Sprite>("default"), OnActivation);
         }
         public Card(int Position)

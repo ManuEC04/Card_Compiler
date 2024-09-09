@@ -8,39 +8,47 @@ public class Player : MonoBehaviour
     [SerializeField] Deck deck;
     [SerializeField] Hand hand;
     [SerializeField] Turn turn;
-    public Dictionary<string , ICardContainer> PlayerComponents {get;set;}
+    [SerializeField] Graveyard graveyard;
     [SerializeField] string id;
     public Deck Deck { get { return deck; } }
     public Hand Hand { get { return hand; } }
     public Turn Turn { get { return turn; } }
+    public Graveyard Graveyard { get { return graveyard; } }
     public string Id { get { return id; } }
-    [SerializeField]Hand otherhand;
-    public Hand Otherhand {get{return otherhand;}}
-    [SerializeField]Deck otherdeck;
-    public Deck Otherdeck {get{return otherdeck;}}
-    [SerializeField]GameZone playerfield;
-    public GameZone Field {get{return playerfield;}}
-    [SerializeField]GameZone otherfield;
-    public GameZone Otherfield {get{return otherfield;}}
+    [SerializeField] Hand otherhand;
+    public Hand Otherhand { get { return otherhand; } }
+    [SerializeField] Deck otherdeck;
+    public Deck Otherdeck { get { return otherdeck; } }
+    [SerializeField] GameZone playerfield;
+    public GameZone Field { get { return playerfield; } }
+    [SerializeField] GameZone otherfield;
+    public GameZone Otherfield { get { return otherfield; } }
+    public LifeCounter LifeCounter {get;set;}
 
     public void Draw(int i) // Here we add i cards from the deck to the hand
     {
+
         if (!Turn.DrawExecuted)
         {
+
             for (int k = 0; k < i; k++)
             {
-                Deck.GetCardList()[0].transform.SetParent(Hand.transform, true);
-                Hand.GetCardList().Add(Deck.GetCardList()[0]);
-                Hand.GetCardList()[k].GetComponent<CardOutput>().OnHand = true;
-                Deck.GetCardList().RemoveAt(0);
-                Hand.CheckHandCount();
+                    Deck.GetCardList()[0].transform.SetParent(Hand.transform, true);
+                    Deck.GetCardList()[0].GetComponent<CardOutput>().OnHand = true;
+                    Hand.GetCardList().Add(Deck.GetCardList()[0]);
+                    Deck.GetCardList().RemoveAt(0);
+                    Hand.CheckHandCount();
             }
             Turn.DrawExecuted = true;
         }
     }
     public void StartRoundDraw()
     {
-        Draw(2);
+        if (!turn.DrawExecuted)
+        {
+            Draw(2);
+            turn.DrawExecuted = true;
+        }
     }
     public void Pass()
     {
@@ -51,7 +59,18 @@ public class Player : MonoBehaviour
     }
     void Start()
     {
+        LifeCounter = GetComponentInChildren<LifeCounter>();
+        FactionLeader Leader = Field.GetComponentInChildren<FactionLeader>();
+        Leader.FindLeader();
         Draw(10);
+    }
+    public void ResetField()
+    {
+        foreach (Row row in playerfield.Rows)
+        {
+            graveyard.SendToGraveyard(row);
+        }
+        Field.UpdatePowerCounter();
     }
 
 }

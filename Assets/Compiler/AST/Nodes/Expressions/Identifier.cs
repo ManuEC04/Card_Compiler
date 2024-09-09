@@ -1,11 +1,13 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.VisualScripting;
 namespace Compiler
 {
     public class Identifier : Expression
     {
         public override object Value { get; set; }
+        Expression SavedExpression;
         public Expression? Expression { get; set; }
         bool done;
 
@@ -16,6 +18,7 @@ namespace Compiler
                 UnityEngine.Debug.Log("Evaluamos el identificador");
                 Context context = Context.Instance;
                 Expression expr = context.scope.Declaration[(string)Value];
+                SavedExpression = expr;
                 expr.Evaluate();
                 Value = expr.Value;
                 done = true;
@@ -34,7 +37,10 @@ namespace Compiler
         }
           public override void ResetValues()
         {
-            done = false;
+            Expression = SavedExpression;
+            Expression.Evaluate();
+            Value = Expression.Value;
+            UnityEngine.Debug.Log("Se reseteo el identificador" + Expression.Value);
         }
 
         public Identifier(object Value, Expression Expression, ExpressionType Type, int Position) : base(Value, ExpressionType.Identifier, Position)

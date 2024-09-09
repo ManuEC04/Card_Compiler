@@ -16,7 +16,7 @@ public class Deck : MonoBehaviour, ICardContainer
         UnityEngine.Vector3 Position = new UnityEngine.Vector3(0, 0, 0);
         foreach (UnityCard unityCard in Data.PlayerDeck)
         {
-            GameObject card = Instantiate(prefab, Position, UnityEngine.Quaternion.identity, gameObject.transform);
+            GameObject card = Instantiate(prefab, Position, gameObject.transform.rotation, gameObject.transform);
             card.GetComponent<RectTransform>().localScale = new UnityEngine.Vector2(0.16f, 0.16f);
             card.GetComponent<CardOutput>().SetValues(unityCard);
             string id = GetComponentInParent<Player>().Id;

@@ -1,16 +1,6 @@
 //Here we verify that the sequence of tokens complies with the language syntax through a function for each element
-using System.Linq.Expressions;
-using System.Numerics;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
-using System.Security.AccessControl;
-using System.Security.Cryptography;
 using System;
-using UnityEditor.Experimental.GraphView;
-using System.Diagnostics;
-using UnityEngine;
-using System.Text.RegularExpressions;
-using Unity.VisualScripting;
 namespace Compiler
 {
     public class Parser
@@ -718,7 +708,7 @@ namespace Compiler
                 text.Evaluate();
                 return new Declaration(identifier, text, peek().Position);
             }
-            Expression expr = ParsingExpressions();
+            Expression expr = ParsePropertyArgument();
             UnityEngine.Debug.Log(expr.Value);  
             Context context = Context.Instance;
              context.scope.Declaration.Add((string)identifier.Value, expr);

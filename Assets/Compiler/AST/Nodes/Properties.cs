@@ -17,19 +17,22 @@ namespace Compiler
         public Identifier? Identifier { get; set; }
         public override object Value { get; set; }
         FunctionContainer functions = new FunctionContainer();
-        Context context = Context.Instance;
+       
         bool evaluated;
         public override void Evaluate()
         {
-            UnityEngine.Debug.Log(Sintaxys + "." + CardContainer + Method);
+             Context context = Context.Instance;
+            UnityEngine.Debug.Log("VA A EVALUAR UNA PROPIEDAD");
+            UnityEngine.Debug.Log(Sintaxys + CardContainer + Method);
             if (Identifier != null)
             {
                 UnityEngine.Debug.Log("El identificador no es null");
                 string temp = Sintaxys;
                 Value = Identifier.Value;
             }
-            if (Value.Equals("context"))
+            if (Sintaxys.Equals("context"))
             {
+                UnityEngine.Debug.Log("Aqui detecta el context");
                 switch (CardContainer)
                 {
                     case "TriggerPlayer": Value = context.TriggerPlayer(); break;
@@ -46,7 +49,9 @@ namespace Compiler
 
                     case "hand":
                         string id = context.TriggerPlayer();
-                        Value = context.HandOfPlayer(id); break;
+                        Value = context.HandOfPlayer(id); 
+                        SelectMethod(Method , context.HandOfPlayer(id) , (GameObject)Argument.Value);
+                        break;
 
                     case "DeckOfPlayer":
 
@@ -59,8 +64,11 @@ namespace Compiler
                         Value = context.DeckOfPlayer((string)Argument.Value); break;
 
                     case "deck":
+                    UnityEngine.Debug.Log("Detecta el deck");
                         string playerid = context.TriggerPlayer();
-                        Value = context.DeckOfPlayer(playerid); break;
+                        Value = context.DeckOfPlayer(playerid); 
+                        break;
+                        
 
                     case "field": break;
                     case "FieldOfPlayer": break;
@@ -71,9 +79,10 @@ namespace Compiler
                 {
                     switch (Method)
                     {
+                        case "Add":
                         case "Shuffle": functions.Shuffle((List<GameObject>)Value);break;
                         case "Remove": functions.Remove((List<GameObject>)Value , (GameObject)Argument.Value);break;
-                        case "Pop": Value = functions.Pop((List<GameObject>)Value);break;
+                        case "Pop": UnityEngine.Debug.Log("Detecta el pop");Value = functions.Pop((List<GameObject>)Value);break;
                         case "SendBottom": functions.SendBottom((List<GameObject>)Value , (GameObject)Argument.Value);break;
                         case "Push": functions.Push((List<GameObject>)Value , (GameObject)Argument.Value);break;
                         case "Find": UnityEngine.Debug.Log("No implementado"); break;
@@ -105,6 +114,22 @@ namespace Compiler
                     break;
                 }
             }
+        }
+        void SelectMethod(string Method , List<GameObject>list , GameObject myobject)
+        {
+         switch (Method)
+                    {
+                        case "Add": list.Add((GameObject)Argument.Value);
+                        GameObject objeto = (GameObject)Argument.Value;
+                        objeto.transform.SetParent(objeto.transform , true);
+                        break;
+                        case "Shuffle": functions.Shuffle(list);break;
+                        case "Remove": functions.Remove(list, (GameObject)Argument.Value);break;
+                        case "Pop": Value = functions.Pop(list);break;
+                        case "SendBottom": functions.SendBottom(list , (GameObject)Argument.Value);break;
+                        case "Push": functions.Push(list, (GameObject)Argument.Value);break;
+                        case "Find": UnityEngine.Debug.Log("No implementado"); break;
+                    }
         }
         public override void ResetValues()
         {

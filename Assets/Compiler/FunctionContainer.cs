@@ -8,9 +8,9 @@ namespace Compiler
     {
         public Dictionary<string, Delegate> Functions = new Dictionary<string, Delegate> { };
         Context context = Context.Instance;
-        public object Pop<T>(List<T> List)
+        public GameObject Pop(List<GameObject> List)
         {
-            T temp = List[0];
+            GameObject temp = List[0];
             List.RemoveAt(0);
             return temp;
         }

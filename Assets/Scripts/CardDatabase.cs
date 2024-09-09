@@ -10,6 +10,7 @@ public class CardDatabase
     static CardDatabase instance;
     static bool Created;
     public List<UnityCard> PlayerDeck {get;set;}
+    EffectsContainer Effects = new EffectsContainer();
     public static CardDatabase Instance
     {
         get
@@ -35,6 +36,9 @@ public class CardDatabase
     private List<UnityCard> nordickdeck = new List<UnityCard>();
     public void CreateNordickDeck()
     {
+    Cards.Add(new UnityCard("Oro","Supertormenta","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Tormenta"), Effects.MeleeW));
+    Cards.Add(new UnityCard("Oro","Nilfheim","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Nilfheim") , Effects.SiegeW));
+    Cards.Add(new UnityCard("Plata","Frost","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Alfheim") , Effects.RangedW));
     Cards.Add(new UnityCard("Plata","Vali","Nordics" , 5 , new string[]{"Melee" , "Ranged"} , Resources.Load<Sprite>("Vali")));
     Cards.Add(new UnityCard("Plata","Vali","Nordics" , 5 , new string[]{"Melee" , "Ranged"} , Resources.Load<Sprite>("Vali")));
     Cards.Add(new UnityCard("Oro","Thor","Nordics" , 7 , new string[]{"Melee"} , Resources.Load<Sprite>("Thor")));
@@ -57,9 +61,6 @@ public class CardDatabase
     Cards.Add(new UnityCard("Plata","Drakkar","Nordics" , 5 , new string[]{"Siege"} , Resources.Load<Sprite>("Drakkar")));
     Cards.Add(new UnityCard("Silver","Berserker","Nordics" , 9 , new string[]{"Siege"} , Resources.Load<Sprite>("Berserker")));
     Cards.Add(new UnityCard("Oro","Bendicion de Baldur","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Bendiciondebaldur")));
-    Cards.Add(new UnityCard("Oro","Supertormenta","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Tormenta")));
-    Cards.Add(new UnityCard("Oro","Nilfheim","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Nilfheim")));
-    Cards.Add(new UnityCard("Plata","Frost","Nordics" , 0 , new string[]{"Weather"} , Resources.Load<Sprite>("Alfheim")));
     }
     
     

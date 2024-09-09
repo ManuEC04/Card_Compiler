@@ -60,15 +60,18 @@ namespace Compiler
         public override void Evaluate()
         {
             Context context = Context.Instance;
-            for(int i = 0 ; i < context.targets.Count ; i++)
+            while(context.targets.Count > 0)
             {
+                UnityEngine.Debug.Log(context.targets.Count);
                 foreach (Expression ins in Instructions)
                 {
                     ins.Evaluate();
                 }
                 ResetValues();
+                UnityEngine.Debug.Log("Se completa un for");
                 context.targets[0].GetComponent<CardOutput>().UpdateProperties();
                 context.targets.RemoveAt(0);
+                UnityEngine.Debug.Log(context.targets.Count);
             }
         }
         public override void ResetValues()

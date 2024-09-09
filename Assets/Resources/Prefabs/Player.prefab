@@ -25,17 +25,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733772130562525580}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 149506722867663807}
+  m_Father: {fileID: 4662728047534272806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -423.48343, y: -128.3216}
-  m_SizeDelta: {x: 15.1658, y: 70.6432}
+  m_AnchoredPosition: {x: -356.16055, y: 89.61847}
+  m_SizeDelta: {x: -318.2958, y: 70.6432}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7199765366787411756
 CanvasRenderer:
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7decef67cc9a9438014b8ba5d8b9bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerdeck: []
+  cards: []
   prefab: {fileID: 961805442505730652, guid: d8310ea93797c1841be0b47bf16c3511, type: 3}
 --- !u!114 &7821344987742617482
 MonoBehaviour:
@@ -187,6 +187,7 @@ RectTransform:
   - {fileID: 8129775638749901000}
   - {fileID: 8358716034278470983}
   - {fileID: 149506722867663807}
+  - {fileID: 6643199262110228070}
   m_Father: {fileID: 3467005619234520075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -209,6 +210,42 @@ MonoBehaviour:
   melee: {fileID: 3740020182783270460}
   ranged: {fileID: 1309920524421349115}
   siege: {fileID: 4924984122069348853}
+  ShowTotalPower: {fileID: 0}
+--- !u!1 &1734011383773591925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8831803998593061556}
+  m_Layer: 5
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8831803998593061556
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734011383773591925}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3467005619234520075}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 646.07, y: -159.14325}
+  m_SizeDelta: {x: 90.618, y: 143.5143}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3672198958950286994
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,6 +281,7 @@ RectTransform:
   - {fileID: 1462638373130988213}
   - {fileID: 4662728047534272806}
   - {fileID: 424644749645089746}
+  - {fileID: 8831803998593061556}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -266,7 +304,12 @@ MonoBehaviour:
   deck: {fileID: 7612677767788345411}
   hand: {fileID: 6661398609622770965}
   turn: {fileID: 5280500669321537735}
+  graveyard: {fileID: 0}
   id: player1
+  otherhand: {fileID: 0}
+  otherdeck: {fileID: 0}
+  playerfield: {fileID: 5926587037932915370}
+  otherfield: {fileID: 0}
 --- !u!1 &4802435522239176716
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,8 +338,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6643199262110228070}
+  m_Children: []
   m_Father: {fileID: 4662728047534272806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -497,7 +539,7 @@ MonoBehaviour:
       - m_Target: {fileID: 6925622333160436822}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: Draw
-        m_Mode: 1
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -625,7 +667,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3045626202613341547}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6925622333160436822}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: Pass
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6629840597413607554
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,7 +777,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Rowtag: Siege
-  Cards: []
 --- !u!50 &4209291520880831902
 Rigidbody2D:
   serializedVersion: 4
@@ -872,7 +925,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Rowtag: Ranged
-  Cards: []
 --- !u!50 &5112342294663362226
 Rigidbody2D:
   serializedVersion: 4
@@ -1021,7 +1073,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Rowtag: Melee
-  Cards: []
 --- !u!50 &2735599500587410932
 Rigidbody2D:
   serializedVersion: 4
@@ -1122,7 +1173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d24563bf8bf8e944b58726484f1dcf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerHand: []
+  Cards: []
 --- !u!114 &2255396775127715956
 MonoBehaviour:
   m_ObjectHideFlags: 0
