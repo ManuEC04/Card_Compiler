@@ -7,22 +7,38 @@ namespace Compiler
     public class Identifier : Expression
     {
         public override object Value { get; set; }
-        Expression SavedExpression;
+        object OriginalValue;
         public Expression? Expression { get; set; }
-        bool done;
+        bool done = false;
 
         public override void Evaluate()
         {
-            if (!done)
+            if (Value.Equals("target"))
             {
-                UnityEngine.Debug.Log("Evaluamos el identificador");
+                OriginalValue = Value;
                 Context context = Context.Instance;
+                Value = context.targets[0];
+                done = true;
+            }
+            else if (Value.Equals("context"))
+            {
+                OriginalValue = Value;
+                Value = Context.Instance;
+                done = true;
+            }
+            else if (!done)
+            {
+                OriginalValue = Value;
+                Context context = Context.Instance;
+                UnityEngine.Debug.Log(Value);
                 Expression expr = context.scope.Declaration[(string)Value];
-                SavedExpression = expr;
                 expr.Evaluate();
                 Value = expr.Value;
                 done = true;
+
             }
+
+
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
@@ -35,25 +51,17 @@ namespace Compiler
             }
             return false;
         }
-          public override void ResetValues()
+        public override void ResetValues()
         {
-            Expression = SavedExpression;
-            Expression.Evaluate();
-            Value = Expression.Value;
-            UnityEngine.Debug.Log("Se reseteo el identificador" + Expression.Value);
+            Value = OriginalValue;
+            done = false;
         }
 
-        public Identifier(object Value, Expression Expression, ExpressionType Type, int Position) : base(Value, ExpressionType.Identifier, Position)
-        {
-            this.Value = Value;
-            this.Position = Position;
-            this.Expression = Expression;
-        }
+
         public Identifier(object Value, int Position) : base(ExpressionType.Identifier)
         {
             this.Value = Value;
             this.Position = Position;
-
         }
 
     }

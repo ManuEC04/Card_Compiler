@@ -34,6 +34,7 @@ namespace Compiler
         }
         public bool VerifyPredicate(UnityCard card)
         {
+            UnityEngine.Debug.Log("Entramos en el verify");
            switch(Property.Sintaxys)
            {
             case "Faction": 

@@ -25,23 +25,18 @@ namespace Compiler
                    temp -= (double)Right.Value;
                    Left.Value = temp;
 
-                    UnityEngine.Debug.Log(Left.Value);
+
+                   UnityEngine.Debug.Log("Power de la carta:" + " " + Left.Value);
                     break;
 
                 case "+=":
-                    Increase((double)Left.Value , (double)Right.Value);
+                    double temporal = (double)Left.Value;
+                   temporal += (double)Right.Value;
+                   Left.Value = temporal;
                     break;
             }
-            UnityEngine.Debug.Log("Este es el value despues de operar la asignacion" + Left.Value);
+  
             
-        }
-        void Decrease(double Value , double Decrease)
-        {
-            Value -=Decrease;
-        }
-        void Increase(double Value , double Increase)
-        {
-            Value+=Increase;
         }
         public override bool CheckSemantic(Context context, List<CompilingError> Errors, Scope scope)
         {
@@ -51,7 +46,6 @@ namespace Compiler
         {
             Left.ResetValues();
             Right.ResetValues();
-            UnityEngine.Debug.Log("Se resetean los valores");
         }
 
         public Asignation(Expression Left, Expression Right, object Value, int Position) : base(Value, Left, Right, ExpressionType.Asignation, Position)

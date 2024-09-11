@@ -10,6 +10,7 @@ namespace Compiler
         public Dictionary<string, Card> Cards { get; set; }
         public Dictionary<string, Effect> Effects { get; set; }
         public List<GameObject> targets {get;set;}
+        public GameObject Selector {get;set;}
         static Context instance;
         static bool created;
         public static Context Instance
@@ -62,7 +63,11 @@ namespace Compiler
             {
                 return MyGame.Player1.GetComponent<Player>().Id;
             }
-            return MyGame.Player2.GetComponent<Player>().GetComponent<Player>().Id;
+            else if(MyGame.Player2.GetComponent<Player>().GetComponentInChildren<Turn>().StartTurn)
+            {
+                return MyGame.Player2.GetComponent<Player>().GetComponent<Player>().Id;
+            }
+            throw new Exception("No es el turno de ningunp de los dos jugadores");
         }
 
     }

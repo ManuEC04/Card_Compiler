@@ -18,11 +18,23 @@ namespace Compiler
         public List<GameObject> SelectTargets(List<GameObject> List)
         {
             Predicate.Comparation.Right.Evaluate();
-            Debug.Log("Se llama a seleccionar targets");
             List<GameObject> cards = new List<GameObject>();
-
-
-                foreach (GameObject card in List)
+            Single.Evaluate();
+            if((string)Single.Value == "true")
+            {
+                  foreach (GameObject card in List)
+                {
+                    if (Predicate.VerifyPredicate(card.GetComponent<CardOutput>().Card))
+                    {
+                        cards.Add(card);
+                        break;
+                    }
+                }
+                return cards;
+            }
+            else
+            {
+                 foreach (GameObject card in List)
                 {
                     if (Predicate.VerifyPredicate(card.GetComponent<CardOutput>().Card))
                     {
@@ -30,6 +42,8 @@ namespace Compiler
                     }
                 }
                 return cards;
+            }
+                
            
         }
          public string GetSource()

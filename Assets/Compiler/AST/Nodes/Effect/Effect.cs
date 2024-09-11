@@ -20,6 +20,9 @@ namespace Compiler
                         UnityEngine.Debug.Log("Se ejecuta un action");
                         UnityEngine.Debug.Log(Action.Count);
                         expr.Evaluate();
+                    }
+                     foreach (Expression expr in Action)
+                    {
                         expr.ResetValues();
                     }
             }

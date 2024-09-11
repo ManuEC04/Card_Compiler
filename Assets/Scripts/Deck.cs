@@ -28,5 +28,18 @@ public class Deck : MonoBehaviour, ICardContainer
     {
         return cards;
     }
+      public void RemoveCard(GameObject value)
+    {
+      cards.Remove(value);
+      value.transform.SetParent(gameObject.transform , false);
+    }
+    void Update()
+    {
+        foreach (GameObject card in cards)
+        {
+            card.transform.SetParent(gameObject.transform , true);
+            card.GetComponent<CardOutput>().OnHand = false;
+        }
+    }
 
 }

@@ -16,8 +16,21 @@ public class Graveyard : MonoBehaviour , ICardContainer
        list.GetCardList().Clear();
        list.UpdateTotalPower();
     }
+    public void RemoveCard(GameObject value)
+    {
+      cards.Remove(value);
+      value.transform.SetParent(gameObject.transform , false);
+    }
     public List<GameObject> GetCardList()
     {
       return cards;
     }
-}
+  void Update()
+  {
+    foreach(GameObject card in cards)
+        {
+            card.transform.SetParent(gameObject.transform , true);
+        }
+    }
+  }
+

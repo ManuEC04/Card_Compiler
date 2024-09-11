@@ -27,7 +27,9 @@ namespace Compiler
         {
             UnityEngine.Debug.Log("Se resetea la expresion unaria");
             Expr.ResetValues();
-            Value = Expr.Value;
+            Value = op;
+            done = false;
+            
         }
         public override void Evaluate()
         {
@@ -37,7 +39,25 @@ namespace Compiler
              done = true;
             }
             UnityEngine.Debug.Log("Este es el valor de la expression dentro de la unaria" + Value);
-            if((string)op == "++")
+   
+             if(Value.Equals("++"))
+            {
+                double temp =  (double)Expr.Value;
+                temp++;
+                Expr.Value = temp;
+                op = Value;
+                Value = temp; 
+                UnityEngine.Debug.Log(Value);
+            }
+            else if (Value.Equals("--"))
+            {
+                double temp = (double)Expr.Value;
+                temp--;
+                Expr.Value = temp;
+                op = Value;
+                Value = temp;
+            }
+                     if(op.Equals("++"))
             {
                 double temp = (double)Value;
                 temp++;
@@ -45,21 +65,13 @@ namespace Compiler
                 Value = temp;
 
             }
-            else if((string)Value == "++")
+            else if(op.Equals("--"))
             {
-                double temp =  (double)Expr.Value;
-                temp++;
-                Expr.Value = temp;
-                op = Value;
-                Value = temp; 
-            }
-            else if ((string)Value == "--")
-            {
-                double temp = (double)Expr.Value;
+                double temp = (double)Value;
                 temp--;
                 Expr.Value = temp;
-                op = Value;
                 Value = temp;
+
             }
             UnityEngine.Debug.Log("Evalua correctamente la expresion unaria");
      

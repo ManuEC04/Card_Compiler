@@ -17,7 +17,7 @@ namespace Compiler
                 case ">=": op = ">=";Value = (double)Left.Value >= (double)Right.Value; break;
                 case ">": op = ">";Value = (double)Left.Value > (double)Right.Value; break;
                 case "<=": op = "<=";Value = (double)Left.Value <= (double)Right.Value; break;
-                case "<": op = "<";Value = (double)Left.Value < (double)Right.Value; break;
+                case "<": op = "<";UnityEngine.Debug.Log("Esta es la parte izquierda de Comparation" + Left.Value);Value = (double)Left.Value < (double)Right.Value; break;
                 case "==": op = "==";Value = Left.Value == Right.Value; break;
             }
         }

@@ -25,16 +25,18 @@ namespace Compiler
                 UnityEngine.Debug.Log("Cierra un while");
                 UnityEngine.Debug.Log(Argument.Value);
             }
+            
         }
         public override void ResetValues()
         {
+            Argument.ResetValues();
             foreach (Expression expr in Instructions)
             {
                 expr.ResetValues();
                 
             }
             UnityEngine.Debug.Log("Vamos a resetear el argument del while");
-            Argument.ResetValues();
+            
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
@@ -62,16 +64,15 @@ namespace Compiler
             Context context = Context.Instance;
             while(context.targets.Count > 0)
             {
-                UnityEngine.Debug.Log(context.targets.Count);
+                UnityEngine.Debug.Log("Este es el count de los targets:" + " " +context.targets.Count);
+               
                 foreach (Expression ins in Instructions)
                 {
                     ins.Evaluate();
                 }
                 ResetValues();
-                UnityEngine.Debug.Log("Se completa un for");
                 context.targets[0].GetComponent<CardOutput>().UpdateProperties();
                 context.targets.RemoveAt(0);
-                UnityEngine.Debug.Log(context.targets.Count);
             }
         }
         public override void ResetValues()

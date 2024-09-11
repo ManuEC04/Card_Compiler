@@ -14,10 +14,11 @@ public class GameZone : MonoBehaviour , ICardContainer
    public Row Ranged {get{return ranged;}}
    public Row Siege {get{return siege;}}
    public Row[] Rows {get;set;}
-    List<GameObject> cards;
+    public List<GameObject> cards {get;set;}
 
    void Start()
    {
+      cards = new List<GameObject>();
       Rows = new Row[3];
       Rows[0] = Melee;
       Rows[1] = Ranged;
@@ -46,7 +47,21 @@ public class GameZone : MonoBehaviour , ICardContainer
    }
    public List<GameObject> GetCardList()
    {
+      List<GameObject> cards = new List<GameObject>();
+      foreach(Row row in Rows)
+      {
+         foreach(GameObject card in row.GetCardList())
+         {
+            cards.Add(card);
+         }
+      }
       return cards;
    }
+     public void RemoveCard(GameObject value)
+    {
+      melee.RemoveCard(value);
+      ranged.RemoveCard(value);
+      siege.RemoveCard(value);
+    }
 
 }

@@ -799,6 +799,10 @@ PrefabInstance:
       value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 5926587037932915370, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
+      propertyPath: weatherrow
+      value: 
+      objectReference: {fileID: 1220944108}
+    - target: {fileID: 5926587037932915370, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
       propertyPath: ShowTotalPower
       value: 
       objectReference: {fileID: 2018416684}
@@ -826,6 +830,10 @@ PrefabInstance:
       propertyPath: turn
       value: 
       objectReference: {fileID: 1896401765}
+    - target: {fileID: 6925622333160436822, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1942000592}
     - target: {fileID: 6925622333160436822, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
       propertyPath: graveyard
       value: 
@@ -2585,6 +2593,10 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5926587037932915370, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
+      propertyPath: weatherrow
+      value: 
+      objectReference: {fileID: 1409249253}
+    - target: {fileID: 5926587037932915370, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
       propertyPath: ShowTotalPower
       value: 
       objectReference: {fileID: 658585646}
@@ -2592,6 +2604,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 84
       objectReference: {fileID: 0}
+    - target: {fileID: 6925622333160436822, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1942000592}
     - target: {fileID: 6925622333160436822, guid: 72df5fa3b29147049811cb835e1e876e, type: 3}
       propertyPath: graveyard
       value: 

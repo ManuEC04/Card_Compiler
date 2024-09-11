@@ -476,6 +476,7 @@ namespace Compiler
                     property = new Property(previous().Value.ToString(), identifier, peek().Position);
                 }
             }
+           
             Back(); // We go back because the NodeComparation analyze first the left part of the expression
             Expression comparation = ParseComparation();
             return new Predicate(property, (Comparation)comparation, peek().Position);
@@ -584,6 +585,14 @@ namespace Compiler
             UnityEngine.Debug.Log(peek().Value);
 
             Identifier? identifier = ParseIdentifier();
+            if(identifier !=null)
+            {
+                UnityEngine.Debug.Log("El identifier de la prop no es null");
+            }
+            else
+            {
+                UnityEngine.Debug.Log("El identifier es null");
+            }
             Expression? Argument = null;
             string Sintaxys = null;
             string CardContainer = null;
@@ -665,8 +674,7 @@ namespace Compiler
         {
             if(matchtype(TokenType.Identifier) || matchtype(TokenType.Keyword))
             {
-              UnityEngine.Debug.Log("Detecta el identificador");
-              
+
                if(lookahead(Checker.Point))
                {
                  Back();
@@ -675,6 +683,7 @@ namespace Compiler
                   UnityEngine.Debug.Log("La parsea");
                  return property;
                }
+               Back();
                Expression expr = ParseIdentifier();
                return expr;
             }
@@ -691,6 +700,10 @@ namespace Compiler
             else if(lookahead(Checker.OpenParenthesis))
             {
                 Expression expr = ParsePredicate();
+                if(!match(Checker.ClosedParenthesis))
+                {
+                    Errors.Add(new CompilingError(Pos , ErrorCode.Expected , ") was expected"));
+                }
                 return expr;
             }
             return null;
@@ -757,7 +770,7 @@ namespace Compiler
         }
         Identifier? ParseIdentifier()
         {
-            if (matchtype(TokenType.Identifier))
+            if (matchtype(TokenType.Identifier) || match(Checker.target))
             {
                 Identifier declaration = new Identifier(previous().Value, previous().Position);
                 return declaration;

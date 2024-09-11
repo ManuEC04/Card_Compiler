@@ -6,45 +6,70 @@ namespace Compiler
 {
     public class FunctionContainer
     {
-        public Dictionary<string, Delegate> Functions = new Dictionary<string, Delegate> { };
-        Context context = Context.Instance;
+
         public GameObject Pop(List<GameObject> List)
         {
             GameObject temp = List[0];
             List.RemoveAt(0);
             return temp;
         }
-        public void Shuffle<T>(List<T> list)
+        public void Shuffle(List<GameObject> list)
         {
-           
+            System.Random rand = new System.Random();
+            int n = list.Count;
+            for (int i = n - 1; i > 0; i--)
+            {
+                int j = rand.Next(0, i + 1);
+                GameObject temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
+            }
         }
-        public void Remove<T>(List<T> list, T value)
+        public void Remove(List<GameObject> list, GameObject value)
         {
+            Context context = Context.Instance;
+            if (context.Selector != null)
+            {
+                ICardContainer Container = context.Selector.GetComponent<ICardContainer>();
+                Container.RemoveCard(value);
+            }
             list.Remove(value);
         }
-        public void SendBottom<T>(List<T> list, T value)
+        public void SendBottom(List<GameObject> list, GameObject value)
         {
+            Context context = Context.Instance;
+            if (context.Selector != null)
+            {
+                ICardContainer Container = context.Selector.GetComponent<ICardContainer>();
+                Container.RemoveCard(value);
+            }
             list.Add(value);
         }
-        public void Push<T>(List<T> list, T value)
+        public void Push(List<GameObject> list, GameObject value)
         {
-            T temp = list[0];
+            Context context = Context.Instance;
             int index = list.Count - 1;
             list.Add(value);
+            GameObject temp = list[0];
             list[0] = list[index];
-            list[index] = value;
+            list[index] = temp;
+            context.Selector.GetComponent<ICardContainer>().RemoveCard(value);
+            value.transform.SetParent(context.Selector.transform, false);
         }
-        public List<T> Find<T>(Predicate predicate, List<T> list)
+        public List<GameObject> Find(Predicate predicate, List<GameObject> list)
         {
-            List<T> returnlist = new List<T>();
+            List<GameObject> returnlist = new List<GameObject>();
 
-            foreach (T value in list)
+            foreach (GameObject value in list)
             {
-                predicate.Comparation.Evaluate();
-                if (predicate.Comparation.Right.Value.Equals(value))
+                if (predicate.VerifyPredicate(value.GetComponent<CardOutput>().Card))
                 {
                     returnlist.Add(value);
                 }
+            }
+            foreach(GameObject value in returnlist)
+            {
+                Debug.Log(value.GetComponent<CardOutput>().Card.Name);
             }
             return returnlist;
         }

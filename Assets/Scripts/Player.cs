@@ -13,6 +13,9 @@ public class Player : MonoBehaviour
     public Deck Deck { get { return deck; } }
     public Hand Hand { get { return hand; } }
     public Turn Turn { get { return turn; } }
+    [SerializeField] Board board;
+    public Board Board { get { return board; } }
+
     public Graveyard Graveyard { get { return graveyard; } }
     public string Id { get { return id; } }
     [SerializeField] Hand otherhand;
@@ -71,6 +74,7 @@ public class Player : MonoBehaviour
             graveyard.SendToGraveyard(row);
         }
         Field.UpdatePowerCounter();
+        playerfield.cards.Clear();
     }
 
 }

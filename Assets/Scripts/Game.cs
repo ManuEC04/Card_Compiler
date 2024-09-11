@@ -12,7 +12,7 @@ public class Game : MonoBehaviour
     [SerializeField] GameObject player2;
     [SerializeField] GameObject board;
     [SerializeField] Animator animator;
-    public GameObject Board { get { return Board; } }
+    public GameObject Board { get { return board; } }
     public GameObject Player1 { get { return player1; } }
     public GameObject Player2 { get { return player2; } }
     public Dictionary<string, Player> Players { get; set; }
@@ -21,13 +21,14 @@ public class Game : MonoBehaviour
     bool created;
     static Game instance;
     public static Game Instance { get { return instance; } }
-
     void Start()
     {
+
         player1component = player1.GetComponent<Player>();
         player2component = player2.GetComponent<Player>();
         player1turn = player1.GetComponent<Player>().Turn;
         player2turn = player2.GetComponent<Player>().Turn;
+        player1turn.StartTurn = true;
         Players = new Dictionary<string, Player>();
         Players.Add("player1", player1.GetComponent<Player>());
         Players.Add("player2", player2.GetComponent<Player>());

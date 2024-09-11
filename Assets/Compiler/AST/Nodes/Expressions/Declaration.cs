@@ -17,7 +17,8 @@ namespace Compiler
         }
           public override void ResetValues()
         {
-            
+            UnityEngine.Debug.Log("Declaration reset");
+            Identifier.ResetValues();
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {

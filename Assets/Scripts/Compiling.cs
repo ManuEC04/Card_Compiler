@@ -14,6 +14,7 @@ public class Compiling : MonoBehaviour
     void Start()
     {
         Database = CardDatabase.Instance;
+        prefab = Resources.Load<GameObject>("Prefabs/Card");
     }
     public void CompilingProcess()
     {
