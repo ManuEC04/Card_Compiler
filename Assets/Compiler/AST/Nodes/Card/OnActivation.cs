@@ -27,7 +27,10 @@ namespace Compiler
         }
         public override void Evaluate()
         {
-           
+            foreach (DeclaredEffect effect in Effects)
+            {
+                effect.Evaluate();
+            }
         }
     }
 }

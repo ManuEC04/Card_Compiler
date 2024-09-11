@@ -11,16 +11,55 @@ namespace Compiler
 
         public override void Evaluate()
         {
-            Single.Evaluate();
-            Source.Evaluate();
-            Predicate.Evaluate();
-        }
+            Context context = Context.Instance;
+            string id = context.TriggerPlayer();
+            Player player = context.GetPlayer(id);
+
+                 switch (Source.Value)
+                {
+                    case "board":
+                    context.Selector = player.Board.gameObject;
+                        context.targets = SelectTargets(player.Board.GetCardList());
+                        break;
+                    case "hand":
+                    context.Selector = player.Hand.gameObject;
+                        context.targets = SelectTargets(player.Hand.GetCardList());
+                        break;
+                    case "otherhand":
+                    context.Selector = player.Otherhand.gameObject;
+                        context.targets = SelectTargets(player.Otherhand.GetCardList());
+                        break;
+                    case "deck":
+                    context.Selector = player.Deck.gameObject;
+                        context.targets = SelectTargets(player.Deck.GetCardList());
+                        break;
+                    case "otherdeck":
+                    context.Selector = player.Otherdeck.gameObject;
+                        context.targets = SelectTargets(player.Otherdeck.GetCardList());
+                        break;
+                    case "field":
+                    context.Selector = player.Field.gameObject;
+                        context.targets = SelectTargets(player.Field.GetCardList());
+                        break;
+                    case "otherfield":
+                    context.Selector = player.Otherfield.gameObject;
+                        context.targets = SelectTargets(player.Otherfield.GetCardList());
+                        break;
+                        case"graveyard":
+                         context.Selector = player.Graveyard.gameObject;
+                         context.targets = SelectTargets(player.Graveyard.GetCardList());
+                         break;
+                        case"othergraveyard":
+                         context.Selector = player.OtherGraveyard.gameObject;
+                         context.targets = SelectTargets(player.OtherGraveyard.GetCardList());break;
+                }
+            }
         public List<GameObject> SelectTargets(List<GameObject> List)
         {
             Predicate.Comparation.Right.Evaluate();
             List<GameObject> cards = new List<GameObject>();
             Single.Evaluate();
-            if((string)Single.Value == "true")
+            if(Single.Value.Equals("true"))
             {
                   foreach (GameObject card in List)
                 {

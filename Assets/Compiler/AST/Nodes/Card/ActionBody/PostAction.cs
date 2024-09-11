@@ -1,30 +1,39 @@
 
 using System.Collections.Generic;
+using System.Diagnostics;
 namespace Compiler
 {
-    public class PostAction : ASTNode
+  public class PostAction : DeclaredEffect
+  {
+    public DeclaredEffect Parent { get; set; }
+    public override void Evaluate()
     {
-
-        public Expression? Type {get; set;}
-        public Selector? Selector {get; set;}
-        public PostAction? Post {get; set;}
-        
-        public override void Evaluate()
+      if (Selector != null)
+      {
+        if (Selector.Source.Value.Equals("parent"))
         {
-            if(Post != null)
-            {
-              Post.Evaluate();
-            }
-            if(Selector !=null)
-            {
-              Selector.Evaluate();
-            }
+          Selector.Source.Value = Parent.Selector.Source.Value;
         }
-        public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
-        {
-            return true;
-        }
-
+      }
+      else
+      {
+        Selector = Parent.Selector;
+      }
+      Selector.Evaluate();
+      Name.Evaluate();
+      Effect effect = Context.Instance.Effects[(string)Name.Value];
+      effect.Evaluate();
+      if (PostAction != null)
+      {
+        PostAction.Parent = this;
+        PostAction.Evaluate();
+      }
     }
-   
+    public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
+    {
+      return true;
+    }
+
+  }
+
 }

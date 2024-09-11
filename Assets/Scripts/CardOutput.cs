@@ -54,60 +54,14 @@ public class CardOutput : MonoBehaviour
     }
     public void ActivateOnActivation()
     {
-        Player player = gameObject.GetComponentInParent<Row>().GetComponentInParent<GameZone>().GetComponentInParent<Player>();
         if (Card.OnActivation != null)
         {
-            foreach (DeclaredEffect effect in Card.OnActivation.Effects)
-            {
-                effect.Evaluate();
-                if (effect.Selector == null)
-                {
-                    Effect declaredeffect = Context.Instance.Effects[(string)effect.Name.Value];
-                    declaredeffect.Evaluate();
-                    return;
-                }
-                Context context = Context.Instance;
-                Effect myeffect = Context.Instance.Effects[(string)effect.Name.Value];
-                string identifier = (string)effect.Selector.Source.Value;
-                switch (identifier)
-                {
-                    case "board":
-                    context.Selector = player.Board.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Board.GetCardList());
-                        break;
-                    case "hand":
-                    context.Selector = player.Hand.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Hand.GetCardList());
-                        break;
-                    case "otherhand":
-                    context.Selector = player.Otherhand.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Otherhand.GetCardList());
-                        break;
-                    case "deck":
-                    context.Selector = player.Deck.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Deck.GetCardList());
-                        break;
-                    case "otherdeck":
-                    context.Selector = player.Otherdeck.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Otherdeck.GetCardList());
-                        break;
-                    case "field":
-                    context.Selector = player.Field.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Field.GetCardList());
-                        break;
-                    case "otherfield":
-                    context.Selector = player.Otherfield.gameObject;
-                        context.targets = effect.Selector.SelectTargets(player.Otherfield.GetCardList());
-                        break;
-                        case"graveyard":break;
-                        case"othergraveyard":break;
-                }
-                myeffect.Evaluate();
-                Game game = Game.Instance;
-                game.Player1.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();
-                game.Player2.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();
 
-            }
+            Card.OnActivation.Evaluate();
+            Game game = Game.Instance;
+            game.Player1.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();
+            game.Player2.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();
+
         }
     }
     public void ActivateEffect()

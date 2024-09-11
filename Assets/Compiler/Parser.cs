@@ -380,7 +380,7 @@ namespace Compiler
             {
                 if (match(Checker.Type))
                 {
-                    postAction.Type = ParseTextProperties();
+                    postAction.Name = ParseTextProperties();
                     checkcomma();
 
                 }
@@ -391,7 +391,7 @@ namespace Compiler
                 }
                 else if (match(Checker.PostAction))
                 {
-                    postAction.Post = ParsePostAction();
+                    postAction.PostAction = ParsePostAction();
                 }
                 else { return null; }
             }

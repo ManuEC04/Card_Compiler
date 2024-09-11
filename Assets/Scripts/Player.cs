@@ -9,13 +9,14 @@ public class Player : MonoBehaviour
     [SerializeField] Hand hand;
     [SerializeField] Turn turn;
     [SerializeField] Graveyard graveyard;
+    [SerializeField] Graveyard othergraveyard;
     [SerializeField] string id;
     public Deck Deck { get { return deck; } }
     public Hand Hand { get { return hand; } }
     public Turn Turn { get { return turn; } }
     [SerializeField] Board board;
     public Board Board { get { return board; } }
-
+    public Graveyard OtherGraveyard {get{return graveyard;}}
     public Graveyard Graveyard { get { return graveyard; } }
     public string Id { get { return id; } }
     [SerializeField] Hand otherhand;

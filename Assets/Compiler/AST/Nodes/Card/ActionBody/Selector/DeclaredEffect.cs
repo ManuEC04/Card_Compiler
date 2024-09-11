@@ -16,11 +16,16 @@ namespace Compiler
         {
             if(Selector !=null)
             {
-              //Selector.Evaluate();
-              Debug.Log("Selector no es null");
+              Selector.Evaluate();
             }
-            else{Debug.Log("No hay selector");}
-              
+            Name.Evaluate();
+            Effect effect = Context.Instance.Effects[(string)Name.Value];
+            effect.Evaluate();
+            if(PostAction !=null)
+            {
+                PostAction.Parent = this;
+                PostAction.Evaluate();
+            }              
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {
