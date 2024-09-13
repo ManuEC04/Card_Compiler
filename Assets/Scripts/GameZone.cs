@@ -8,21 +8,27 @@ public class GameZone : MonoBehaviour , ICardContainer
    [SerializeField] Row melee;
    [SerializeField] Row ranged;
    [SerializeField] Row siege;
+   [SerializeField] Row weather;
+   [SerializeField] Row increase;
    [SerializeField] UnityEngine.UI.Text ShowTotalPower;
    public double TotalPower {get;set;}
    public Row Melee {get{return melee;}}
    public Row Ranged {get{return ranged;}}
    public Row Siege {get{return siege;}}
+   public Row Weatherrow {get{return weather;}}
+   public Row Increaserow {get{return increase;}}
    public Row[] Rows {get;set;}
     public List<GameObject> cards {get;set;}
 
    void Start()
    {
       cards = new List<GameObject>();
-      Rows = new Row[3];
+      Rows = new Row[5];
       Rows[0] = Melee;
       Rows[1] = Ranged;
       Rows[2] = Siege; 
+      Rows[3] = Weatherrow;
+      Rows[4] = Increaserow;
    }
    public void UpdatePowerCounter()
    {
@@ -32,9 +38,9 @@ public class GameZone : MonoBehaviour , ICardContainer
    public double UpdateRowsPower()
    {
       double TotalPower = 0;
-      foreach (Row row in Rows)
+      for (int i = 0 ; i < 3 ; i++)
       {
-         foreach(GameObject card in row.GetCardList())
+         foreach(GameObject card in Rows[i].GetCardList())
          {
               TotalPower+=card.GetComponent<CardOutput>().PowerValue;
          }
@@ -62,6 +68,12 @@ public class GameZone : MonoBehaviour , ICardContainer
       melee.RemoveCard(value);
       ranged.RemoveCard(value);
       siege.RemoveCard(value);
+      weather.RemoveCard(value);
+      increase.RemoveCard(value);
+    }
+    public void AddCard(GameObject value)
+    {
+      melee.AddCard(value);
     }
 
 }

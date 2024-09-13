@@ -16,6 +16,7 @@ namespace Compiler
             {
                 if (!context.Effects.ContainsKey((string)effect.Name.Value))
                 {
+                    errors.Add(new CompilingError(Position , ErrorCode.Invalid , "This effect is not declared"));
                     return false;
                 }
                 if (!effect.CheckSemantic(context, errors , scope))

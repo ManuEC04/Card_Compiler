@@ -32,6 +32,15 @@ namespace Compiler
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
+            if(Name == null)
+            {
+                Errors.Add(new CompilingError(Position , ErrorCode.None , "The name of the effect cannot be null"));
+                return false;
+            }
+            foreach(Expression expr in Action)
+            {
+                expr.CheckSemantic(Context , Errors , scope);
+            }
             return true;
         }
     }

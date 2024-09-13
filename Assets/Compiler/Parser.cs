@@ -1,6 +1,8 @@
 //Here we verify that the sequence of tokens complies with the language syntax through a function for each element
 using System.Collections.Generic;
 using System;
+using System.Diagnostics;
+using UnityEditor.PackageManager;
 namespace Compiler
 {
     public class Parser
@@ -30,22 +32,23 @@ namespace Compiler
                 {
                     Card Card = ParseCard();
                     Scope scope = new Scope();
-                        tree.Nodes.Add(Card);
-            
+                    tree.Nodes.Add(Card);
+
                 }
                 else if (match(Checker.effect))
                 {
                     Effect? Effect = ParseEffect();
-                    if(Effect!=null)
+                    tree.Nodes.Add(Effect);
+                    if (Effect != null)
                     {
 
-                   
-                    UnityEngine.Debug.Log(Effect.Name.Value);
-                    Context context =Context.Instance;
-                    context.Effects.Add((string)Effect.Name.Value , Effect);
-                    UnityEngine.Debug.Log(context.Effects.Count);
-                     }
-                     else {UnityEngine.Debug.Log("El efecto es nulo");}
+
+                        UnityEngine.Debug.Log(Effect.Name.Value);
+                        Context context = Context.Instance;
+                        context.Effects.Add((string)Effect.Name.Value, Effect);
+                        UnityEngine.Debug.Log(context.Effects.Count);
+                    }
+                    else { UnityEngine.Debug.Log("El efecto es nulo"); }
                 }
                 else
                 {
@@ -115,6 +118,9 @@ namespace Compiler
                     Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
                 }
                 identifier.Expression = ParseIdentifier();
+                //Here we add the Param declaration to the declarations list
+                Context context = Context.Instance;
+                context.scope.Declaration.Add((string)identifier.Value , identifier.Expression);
                 Params.Add(identifier);
                 checkcomma();
             }
@@ -341,7 +347,7 @@ namespace Compiler
             {
                 return;
             }
-            while (lookahead(Checker.Name) || lookahead(Checker.Amount))
+            while (lookahead(Checker.Name) || looktype(TokenType.Identifier))
             {
                 if (match(Checker.Name))
                 {
@@ -351,11 +357,15 @@ namespace Compiler
                 }
                 else if (matchtype(TokenType.Identifier))
                 {
+                    Back();
+                    Identifier identifier = ParseIdentifier();
                     if (!match(Checker.Points))
                     {
                         Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
                     }
-                    effect.Params.Add(ParsingExpressions());
+                    Expression expr = ParsingExpressions();
+                    Declaration declaration = new Declaration(identifier , expr , peek().Position);
+                    effect.Params.Add(declaration);
                     checkcomma();
                 }
             }
@@ -445,7 +455,7 @@ namespace Compiler
         {
             if (!match(Checker.Points))
             {
-               // Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
+                // Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ": expected"));
             }
             if (!match(Checker.OpenParenthesis))
             {
@@ -476,7 +486,7 @@ namespace Compiler
                     property = new Property(previous().Value.ToString(), identifier, peek().Position);
                 }
             }
-           
+
             Back(); // We go back because the NodeComparation analyze first the left part of the expression
             Expression comparation = ParseComparation();
             return new Predicate(property, (Comparation)comparation, peek().Position);
@@ -541,7 +551,7 @@ namespace Compiler
                 {
                     Instructions.Add(ParseFor());
                 }
-                else{advance();}
+                else { advance(); }
 
                 if (lookahead(Checker.Point))
                 {
@@ -555,15 +565,16 @@ namespace Compiler
                         UnityEngine.Debug.Log("Aqui detecta que lo que viene es una asignacion");
                         Token op = previous();
                         Expression right = ParsingExpressions();
-                        Asignation asignation = new Asignation(property , right , op.Value , peek().Position);
+                        Asignation asignation = new Asignation(property, right, op.Value, peek().Position);
                         Instructions.Add(asignation);
-                        checkend(); 
+                        checkend();
                     }
-                    else 
-                    { UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
-                    UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
-                    Instructions.Add(property);
-                    checkend();
+                    else
+                    {
+                        UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
+                        UnityEngine.Debug.Log("Detecta que no viene ni -= ni += ni =");
+                        Instructions.Add(property);
+                        checkend();
                     }
                 }
                 else if (lookahead(Checker.Equal))
@@ -585,7 +596,7 @@ namespace Compiler
             UnityEngine.Debug.Log(peek().Value);
 
             Identifier? identifier = ParseIdentifier();
-            if(identifier !=null)
+            if (identifier != null)
             {
                 UnityEngine.Debug.Log("El identifier de la prop no es null");
             }
@@ -593,7 +604,8 @@ namespace Compiler
             {
                 UnityEngine.Debug.Log("El identifier es null");
             }
-            Expression? Argument = null;
+            Expression Argument = null;
+             Expression index = null;
             string Sintaxys = null;
             string CardContainer = null;
             string Method = null;
@@ -608,7 +620,7 @@ namespace Compiler
                 UnityEngine.Debug.Log("Encuentra el CardContainer");
                 CardContainer = peek().Value;
                 advance();
-                
+
             }
             if (match(Checker.Point))
             {
@@ -622,70 +634,38 @@ namespace Compiler
                 {
                     Argument = ParsePropertyArgument();
                 }
-                if(!match(Checker.ClosedParenthesis))
+                if (!match(Checker.ClosedParenthesis))
                 {
-                    Errors.Add(new CompilingError(Pos , ErrorCode.Expected , ") expected"));
+                    Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ") expected"));
                 }
             }
+            if(match(Checker.OpenSquareBracket))
+            {
+                index = ParsingExpressions();
+            }
+            if(!match(Checker.ClosedSquareBracket))
+            {
+                Errors.Add(new CompilingError(Pos , ErrorCode.Expected , "] expected"));
+            }
             UnityEngine.Debug.Log(peek().Value);
-            return new Property(Sintaxys, CardContainer, Method, identifier, Argument, peek().Position);
-
-
-            /*
-                        Expression? argument = null;
-                        string Property = "";
-                        Identifier identifier = ParseIdentifier();
-                        match(Checker.Point);
-                        while ( matchtype(TokenType.Keyword))
-                        {
-                            Property += previous().Value;
-                            if (match(Checker.Point))
-                            {
-                                Property += ".";
-                            }
-                        }
-                        if (match(Checker.OpenParenthesis))
-                        {
-                            Property += "(";
-                        }
-                        if (matchtype(TokenType.Identifier))
-                        {
-                            if (lookahead(Checker.Point))
-                            {
-                                argument = ParseProperty();
-                            }
-                            Back();
-                            argument = ParseIdentifier();
-                        }
-                        if (match(Checker.ClosedParenthesis))
-                        {
-                            Property += ")";
-                        }
-                        else
-                        {
-                            Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, ") expected"));
-                        }
-                        checkend();
-                        return new Property(Property, identifier , argument, peek().Position);
-                        */
-
+            return new Property(Sintaxys, CardContainer, Method, identifier, Argument, index , peek().Position);
         }
         Expression? ParsePropertyArgument()
         {
-            if(matchtype(TokenType.Identifier) || matchtype(TokenType.Keyword))
+            if (matchtype(TokenType.Identifier) || matchtype(TokenType.Keyword))
             {
 
-               if(lookahead(Checker.Point))
-               {
-                 Back();
-                  UnityEngine.Debug.Log("Sabe que es una propiedad");
-                 Expression property = ParseProperty();
-                  UnityEngine.Debug.Log("La parsea");
-                 return property;
-               }
-               Back();
-               Expression expr = ParseIdentifier();
-               return expr;
+                if (lookahead(Checker.Point))
+                {
+                    Back();
+                    UnityEngine.Debug.Log("Sabe que es una propiedad");
+                    Expression property = ParseProperty();
+                    UnityEngine.Debug.Log("La parsea");
+                    return property;
+                }
+                Back();
+                Expression expr = ParseIdentifier();
+                return expr;
             }
             else if (match(Checker.QuotationMark))
             {
@@ -697,12 +677,12 @@ namespace Compiler
                 Expression expr = ParseTerm();
                 return expr;
             }
-            else if(lookahead(Checker.OpenParenthesis))
+            else if (lookahead(Checker.OpenParenthesis))
             {
                 Expression expr = ParsePredicate();
-                if(!match(Checker.ClosedParenthesis))
+                if (!match(Checker.ClosedParenthesis))
                 {
-                    Errors.Add(new CompilingError(Pos , ErrorCode.Expected , ") was expected"));
+                    Errors.Add(new CompilingError(Pos, ErrorCode.Expected, ") was expected"));
                 }
                 return expr;
             }
@@ -722,10 +702,10 @@ namespace Compiler
                 return new Declaration(identifier, text, peek().Position);
             }
             Expression expr = ParsePropertyArgument();
-            UnityEngine.Debug.Log(expr.Value);  
+            UnityEngine.Debug.Log(expr.Value);
             Context context = Context.Instance;
-             context.scope.Declaration.Add((string)identifier.Value, expr);
-             UnityEngine.Debug.Log(identifier.Value);
+            //context.scope.Declaration.Add((string)identifier.Value, expr);
+            UnityEngine.Debug.Log(identifier.Value);
             return new Declaration(identifier, expr, peek().Position);
         }
         Expression ParseConcatenation()
@@ -772,7 +752,20 @@ namespace Compiler
         {
             if (matchtype(TokenType.Identifier) || match(Checker.target))
             {
-                Identifier declaration = new Identifier(previous().Value, previous().Position);
+                
+                Token token = previous();
+                Expression index = null;
+                if (match(Checker.OpenSquareBracket))
+                {
+                    throw new Exception("Detecta el if");
+                    index = ParseTerm();
+                    
+                    if (!match(Checker.ClosedSquareBracket))
+                    {
+                        Errors.Add(new CompilingError(peek().Position, ErrorCode.Expected, "] expected"));
+                    }
+                }
+                Identifier declaration = new Identifier(token.Value, index, previous().Position);
                 return declaration;
             }
             return null;

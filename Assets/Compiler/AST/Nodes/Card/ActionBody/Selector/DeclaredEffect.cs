@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,47 +6,78 @@ namespace Compiler
     public class DeclaredEffect : ASTNode
     {
         public Expression Name { get; set; }
-        public List <Expression> Params { get; set; }
+        public List<Declaration> Params { get; set; }
         public Selector? Selector { get; set; }
         public PostAction? PostAction { get; set; }
 
 
         public override void Evaluate()
         {
-            if(Selector !=null)
+            Context context = Context.Instance;
+            foreach(Declaration param in Params)
             {
-              Selector.Evaluate();
+                context.scope.Declaration[(string)param.Identifier.Value] = param.Expression;
+            }
+            if (Selector != null)
+            {
+                Selector.Evaluate();
             }
             Name.Evaluate();
             Effect effect = Context.Instance.Effects[(string)Name.Value];
             effect.Evaluate();
-            if(PostAction !=null)
+            if (PostAction != null)
             {
                 PostAction.Parent = this;
                 PostAction.Evaluate();
-            }              
+            }
         }
-        public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
+        public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
             if (Name == null)
             {
                 return false;
             }
-            if (!Context.Effects.ContainsKey((string)Name.Value))
+            if (!Context.Effects.ContainsKey((string)Name.Value)) // Here we verify if there is a param declared with the given key
             {
                 Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "The effect is not declared"));
                 return false;
             }
-            foreach(Expression param in Params)
+            Context context = Context.Instance;
+            foreach (Declaration param in Params)
             {
-                //Here we verify if the type of the param is the declarated in the effect
-                
+
+                if (!context.scope.Declaration.ContainsKey((string)param.Identifier.Value))
+                {
+                    Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "The param is not already declared"));
+                    return false;
+                }
+                else
+                {
+                    Expression expr = context.scope.Declaration[(string)param.Identifier.Value]; 
+                    if (expr.Equals("Number") && param.Expression.Type != ExpressionType.Number)
+                    {
+                        Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "The param doesn't have the type declared"));
+                        return false;
+                    }
+                    else if (expr.Equals("Text") && param.Expression.Type != ExpressionType.Text)
+                    {
+                        Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "The param doesn't have the type declared"));
+                        return false;
+                    }
+                    else if (expr.Equals("Boolean") && param.Expression.Type != ExpressionType.Boolean)
+                    {
+                        Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "The param doesn't have the type declared"));
+                        return false;
+                    }
+                }
+                context.scope.Declaration[(string)param.Identifier.Value] = param.Expression; // Here we assing the param expression declared in the onactivation of the card to the action body of the effect
             }
-            return true;  
+
+            return true;
         }
         public DeclaredEffect()
         {
-            Params = new List<Expression>();
+            Params = new List<Declaration>();
         }
     }
 }

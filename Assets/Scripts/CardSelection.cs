@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,13 +27,39 @@ public class CardSelection : MonoBehaviour
     {
         if(Data.PlayerDeck.Count >= 24)
         {
-            SceneManager.LoadScene("Main");
+            if( CheckLeader(Data.PlayerDeck))
+            {
+                SceneManager.LoadScene("Main");
+            }
+            
         }
         else 
         {
            Debug.Log("Su deck debe tener minimo 25 cartas");
         }
         
+    }
+    public bool CheckLeader(List<UnityCard> cards)
+    {
+        int count = 0;
+        foreach(UnityCard card in cards)
+        {
+           if(card.Range[0] == "FactionLeader")
+           {
+            count++;
+           }
+        }
+        if(count > 1)
+        {
+            Debug.Log("Solo puede tener un lider en el deck");
+            return false;
+        }
+        if(count == 0)
+        {
+            UnityEngine.Debug.Log("Debe tener una carta lider en el mazo");
+            return false;
+        }
+        return true;
     }
     
     

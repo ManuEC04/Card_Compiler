@@ -50,8 +50,8 @@ public class CardDatabase
     Cards.Add(new UnityCard("Plata","Hela","Nordics" , 4 , new string[]{"Ranged"} , Resources.Load<Sprite>("Hela")));
     Cards.Add(new UnityCard("Oro","","Heimdall" , 5 , new string[]{"Ranged","Melee"} , Resources.Load<Sprite>("Heimdall")));
     Cards.Add(new UnityCard("Oro","Loki","Nordics" , 6 , new string[]{"Ranged"} , Resources.Load<Sprite>("Loki")));
-    Cards.Add(new UnityCard("Oro","Gungnir","Nordics" , 0 , new string[]{"Increase"} , Resources.Load<Sprite>("Odinsweapon")));
-    Cards.Add(new UnityCard("Oro","Gajallahorn","Nordics" , 0 , new string[]{"Increase"} , Resources.Load<Sprite>("Gajallahorn")));
+    Cards.Add(new UnityCard("Oro","Gungnir","Nordics" , 0 , new string[]{"Increase"} , Resources.Load<Sprite>("Odinsweapon"), Effects.RangedI));
+    Cards.Add(new UnityCard("Oro","Gajallahorn","Nordics" , 0 , new string[]{"Increase"} , Resources.Load<Sprite>("Gajallahorn"),Effects.SiegeI));
     Cards.Add(new UnityCard("Plata","Frost","Nordics" , 6 , new string[]{"Siege"} , Resources.Load<Sprite>("Frost")));
     Cards.Add(new UnityCard("Plata","Frost","Nordics" , 6 , new string[]{"Siege"} , Resources.Load<Sprite>("Frost")));
     Cards.Add(new UnityCard("Plata","Freya","Nordics" , 6 , new string[]{"Ranged"} , Resources.Load<Sprite>("Freya")));

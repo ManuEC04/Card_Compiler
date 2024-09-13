@@ -11,7 +11,7 @@ namespace Compiler
 
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
-            if(Left.Type == ExpressionType.Number || Right.Type ==ExpressionType.Number)
+            if(Left.Type == ExpressionType.Number && Right.Type ==ExpressionType.Number)
             {
                 return true;
             }

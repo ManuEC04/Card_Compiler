@@ -7,6 +7,7 @@ using UnityEngine;
 public class Row : MonoBehaviour, ICardContainer
 {
     [SerializeField] string Rowtag;
+    public string RowTag {get{return Rowtag;}}
     private List<GameObject> cards = new List<GameObject>();
     public List<GameObject> GetCardList()
     {
@@ -71,5 +72,10 @@ public class Row : MonoBehaviour, ICardContainer
             value.transform.SetParent(gameObject.transform, false);
         }
 
+    }
+    public void AddCard(GameObject value)
+    {
+        cards.Add(value);
+        value.transform.SetParent(gameObject.transform , true);
     }
 }

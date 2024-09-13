@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Compiler;
 using UnityEngine;
 
 public class Board : MonoBehaviour, ICardContainer {
@@ -39,6 +40,20 @@ public class Board : MonoBehaviour, ICardContainer {
         cards.Add(card);
       }
       return cards;
+    }
+    public void AddCard(GameObject value)
+    {
+      Context context = Context.Instance;
+      string id = context.TriggerPlayer();
+
+      if(id == "player1")
+      {
+          player1zone.AddCard(value);
+      }
+      else if (id == "player2")
+      {
+        player2zone.AddCard(value);
+      }
     }
 
 

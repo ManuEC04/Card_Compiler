@@ -21,6 +21,11 @@ public class Graveyard : MonoBehaviour , ICardContainer
       cards.Remove(value);
       value.transform.SetParent(gameObject.transform , false);
     }
+    public void AddCard(GameObject value)
+    {
+      cards.Add(value);
+      value.transform.SetParent(gameObject.transform , false);
+    }
     public List<GameObject> GetCardList()
     {
       return cards;

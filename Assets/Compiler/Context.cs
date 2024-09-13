@@ -6,6 +6,7 @@ namespace Compiler
 {
     public class Context
     {
+        public List<CompilingError> Errors {get;set;}
         public Scope scope {get;set;}
         public Dictionary<string, Card> Cards { get; set; }
         public Dictionary<string, Effect> Effects { get; set; }
@@ -28,6 +29,7 @@ namespace Compiler
         private Context()
         {
             scope = new Scope();
+            Errors = new List<CompilingError>();
             targets = new List<GameObject>();
             Cards = new Dictionary<string, Card>();
             Effects = new Dictionary<string, Effect>();
@@ -55,6 +57,12 @@ namespace Compiler
             Game game = Game.Instance;
             Player player = game.Players[id];
             return player.Graveyard.GetCardList();
+        }
+        public List<GameObject> FieldOfPlayer(string id)
+        {
+            Game game = Game.Instance;
+            Player player = game.Players[id];
+            return player.Field.GetCardList();
         }
         public string TriggerPlayer()
         {

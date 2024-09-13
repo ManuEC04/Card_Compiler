@@ -40,6 +40,11 @@ namespace Compiler
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
+            UnityEngine.Debug.Log("Se chequea semanticamente el while");
+             foreach(Expression ins in Instructions)
+            {
+                ins.CheckSemantic(Context , Errors , scope);
+            }
             return true;
         }
         public While(Expression Argument, int Position) : base(ExpressionType.Loop)
@@ -84,6 +89,11 @@ namespace Compiler
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
         {
+            UnityEngine.Debug.Log("Se chequea semanticamente el for");
+            foreach(Expression ins in Instructions)
+            {
+                ins.CheckSemantic(Context , Errors , scope);
+            }
             return true;
         }
         public For(List<Expression> Instructions, int Position) : base(ExpressionType.Loop)

@@ -18,7 +18,7 @@ public class Compiling : MonoBehaviour
     }
     public void CompilingProcess()
     {
-        List<CompilingError> Errors = new List<CompilingError>();
+        List<CompilingError> Errors = Context.Instance.Errors;
         Lexer lexer = new Lexer();
         List<Token> tokens = lexer.Tokenize(path, Errors);
         Scope scope = new Scope();
@@ -27,7 +27,7 @@ public class Compiling : MonoBehaviour
         {
             Debug.Log(token.Type + " " + token.Value);
         }
-        Parser parser = new Parser(tokens, Errors);
+        Parser parser = new Parser(tokens, Context.Instance.Errors);
         AST tree = parser.ParseProgram();
         UnityEngine.Debug.Log(tree.Nodes.Count);
 
@@ -35,12 +35,15 @@ public class Compiling : MonoBehaviour
         {
             if(node.CheckSemantic(Context.Instance , Errors ,scope))
             {
-               node.Evaluate();
+               if(node is Card)
+               {
+                node.Evaluate();
+               }
             }     
         }
         foreach(CompilingError error in Errors)
         {
-           Debug.Log(error.Argument);
+           Debug.Log(error.Argument + "at line" + " " + error.Position);
         }
         //Showing the card on display
         Vector2 Position = new Vector2(1438, 0);

@@ -57,7 +57,6 @@ public class Lexer
                     if (type != TokenType.Whitespace) // Ignore whitespaces
                     {
                         tokens.Add(new Token(type, match.Value , linenumber));
-                        Console.WriteLine("TYPE"+ ":"+ " "+ type + " " + "VALUE"+ ":" + " "+ match.Value + " "+"POSITION" + ":" + " " + linenumber);
                     }
                     position += match.Length;
                     matchFound = true;

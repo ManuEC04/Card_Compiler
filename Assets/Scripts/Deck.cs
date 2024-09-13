@@ -8,6 +8,7 @@ using UnityEngine;
 public class Deck : MonoBehaviour, ICardContainer
 {
     [SerializeField] List<GameObject> cards;
+    [SerializeField] string Id;
     [SerializeField] private GameObject prefab;
 
     void Awake()
@@ -19,8 +20,7 @@ public class Deck : MonoBehaviour, ICardContainer
             GameObject card = Instantiate(prefab, Position, gameObject.transform.rotation, gameObject.transform);
             card.GetComponent<RectTransform>().localScale = new UnityEngine.Vector2(0.16f, 0.16f);
             card.GetComponent<CardOutput>().SetValues(unityCard);
-            string id = GetComponentInParent<Player>().Id;
-            card.GetComponent<CardOutput>().PlayerId = id;
+            card.GetComponent<CardOutput>().PlayerId = Id;
             cards.Add(card);
         }
     }
@@ -32,6 +32,11 @@ public class Deck : MonoBehaviour, ICardContainer
     {
       cards.Remove(value);
       value.transform.SetParent(gameObject.transform , false);
+    }
+    public void AddCard(GameObject value)
+    {
+        cards.Add(value);
+        value.transform.SetParent(gameObject.transform , true);
     }
     void Update()
     {

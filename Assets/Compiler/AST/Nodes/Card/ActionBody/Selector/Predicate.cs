@@ -30,7 +30,7 @@ namespace Compiler
         }
         public override bool CheckSemantic(Context Context , List<CompilingError> Errors , Scope scope)
         {
-            return true && Property.CheckSemantic(Context , Errors , scope) && Comparation.CheckSemantic(Context , Errors , scope);
+            return true && Property.CheckSemantic(Context , Errors , scope);
         }
         public bool VerifyPredicate(UnityCard card)
         {

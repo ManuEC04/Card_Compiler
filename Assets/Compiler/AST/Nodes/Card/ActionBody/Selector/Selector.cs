@@ -96,14 +96,14 @@ namespace Compiler
             {
                 return false;
             }
-            if (!((string)Source.Value == "parent") && !((string)Source.Value == "board") && !((string)Source.Value == "hand")
+            if ( !((string)Source.Value == "board") && !((string)Source.Value == "hand")
              && !((string)Source.Value == "otherhand") && !((string)Source.Value == "deck") && !((string)Source.Value == "otherdeck")
              && !((string)Source.Value == "field") && !((string)Source.Value == "otherfield"))
             {
                 errors.Add(new CompilingError(Position, ErrorCode.Invalid, "Yo must declare a valid Source"));
                 return false;
             }
-            if (Single.Type != ExpressionType.Boolean)
+            if (Single.Type != ExpressionType.Boolean || Single.Type != ExpressionType.Text)
             {
                 errors.Add(new CompilingError(Position, ErrorCode.Invalid, "Yo must declare a valid Single"));
                 return false;

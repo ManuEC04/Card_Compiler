@@ -9,7 +9,7 @@ public class CardOutput : MonoBehaviour
 {
     [SerializeField] UnityCard card;
     public UnityCard Card { get { return card; } }
-    string playerid = "";
+    [SerializeField]string playerid = "";
     public string PlayerId { get { return playerid; } set { playerid = value; } }
     [SerializeField] Image Picture;
     [SerializeField] UnityEngine.UI.Text Nametext;
@@ -54,10 +54,11 @@ public class CardOutput : MonoBehaviour
     }
     public void ActivateOnActivation()
     {
+        Context context = Context.Instance;
         if (Card.OnActivation != null)
         {
 
-            Card.OnActivation.Evaluate();
+               Card.OnActivation.Evaluate();
             Game game = Game.Instance;
             game.Player1.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();
             game.Player2.GetComponent<Player>().GetComponentInChildren<GameZone>().UpdatePowerCounter();

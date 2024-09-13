@@ -11,6 +11,7 @@ namespace Compiler
     public class Property : Expression
     {
         public Expression? Argument { get; set; }
+        public Expression? Index { get; set; }
         public string Sintaxys { get; set; }
         public string? CardContainer { get; set; }
         public string? Method { get; set; }
@@ -21,38 +22,30 @@ namespace Compiler
         public override void Evaluate()
         {
             Context context = Context.Instance;
-           
-            if (Identifier != null)
+
+            if (Identifier != null && Identifier.Value !=null)
             {
-                UnityEngine.Debug.Log("SE evalua el identifier de la proper");
-                if(Identifier.Value.Equals("target") || Identifier.Value.Equals(context))
+                if (Identifier.Value.Equals("target") || Identifier.Value.Equals(context))
                 {
-                    UnityEngine.Debug.Log("Es target o context");
-                 Sintaxys = (string)Identifier.Value;
+                    Sintaxys = (string)Identifier.Value;
                 }
                 else
                 {
-                    UnityEngine.Debug.Log("Es otro identifier");
                     Identifier.Evaluate();
-                    if(Identifier.Value is GameObject)
-                    {
-                       UnityEngine.Debug.Log("Es un GameObject");
-                    }
-                    else if (Identifier.Value is List<GameObject>)
+                    if (Identifier.Value is List<GameObject>)
                     {
                         UnityEngine.Debug.Log("Es una lista");
                         UnityEngine.Debug.Log(CardContainer);
-                    SelectMethod(CardContainer , (List<GameObject>)Identifier.Value);
-                    return;
+                        SelectMethod(CardContainer, (List<GameObject>)Identifier.Value);
+                        return;
                     }
 
                 }
-                
+
             }
-             UnityEngine.Debug.Log(Sintaxys + CardContainer + Method);
+            UnityEngine.Debug.Log(Sintaxys + CardContainer + Method);
             if (Sintaxys.Equals("context"))
             {
-                GameObject Container;
                 switch (CardContainer)
                 {
                     case "TriggerPlayer": Value = context.TriggerPlayer(); break;
@@ -61,11 +54,10 @@ namespace Compiler
 
                         if (Argument == null)
                         {
-
                             return;
                         }
                         Argument.Evaluate();
-                        Value = context.HandOfPlayer((string)Argument.Value); Container = context.GetPlayer((string)Argument.Value).Hand.gameObject; break;
+                        Value = context.HandOfPlayer((string)Argument.Value);break;
 
                     case "hand":
                         string id = context.TriggerPlayer();
@@ -85,6 +77,7 @@ namespace Compiler
                         }
                         Argument.Evaluate();
                         Value = context.DeckOfPlayer((string)Argument.Value);
+                        UnityEngine.Debug.Log("Este es el deck de "+(string)Argument.Value);
                         SelectMethod(Method, context.DeckOfPlayer((string)Argument.Value));
                         break;
 
@@ -99,13 +92,45 @@ namespace Compiler
                         break;
 
 
-                    case "field": break;
-                    case "FieldOfPlayer": break;
-                    case "graveyard": break;
-                    case "GraveyardOfPlayer": break;
+                    case "field":
+                        string myplayerid = context.TriggerPlayer();
+                        Value = context.FieldOfPlayer(myplayerid);
+                        if (Argument != null && Argument.Type != ExpressionType.Predicate)
+                        {
+                            Argument.Evaluate();
+                        }
+                        SelectMethod(Method, context.DeckOfPlayer(myplayerid));
+                        break;
+
+                    case "FieldOfPlayer":
+                        if (Argument == null)
+                        {
+                            return;
+                        }
+                        Argument.Evaluate();
+                        Value = context.FieldOfPlayer((string)Argument.Value);
+                        SelectMethod(Method, context.FieldOfPlayer((string)Argument.Value));
+                        break;
+
+                    case "graveyard":
+                        Value = context.FieldOfPlayer(context.TriggerPlayer());
+                        if (Argument != null && Argument.Type != ExpressionType.Predicate)
+                        {
+                            Argument.Evaluate();
+                        }
+                        SelectMethod(Method, context.FieldOfPlayer(context.TriggerPlayer()));
+                        break;
+
+                    case "GraveyardOfPlayer":
+                        if (Argument == null)
+                        {
+                            return;
+                        }
+                        Argument.Evaluate();
+                        Value = context.GraveyardOfPlayer((string)Argument.Value);
+                        SelectMethod(Method, context.GraveyardOfPlayer((string)Argument.Value));
+                        break;
                 }
-
-
             }
             else if (Sintaxys == "target")
             {
@@ -117,8 +142,6 @@ namespace Compiler
                 switch (CardContainer)
                 {
                     case "Power":
-                        UnityEngine.Debug.Log("Detecto que la propiedad es el power");
-
                         if (!evaluated)
                         {
                             Value = context.targets[0].GetComponent<CardOutput>().PowerValue;
@@ -128,11 +151,11 @@ namespace Compiler
                         {
                             context.targets[0].GetComponent<CardOutput>().PowerValue = (double)Value;
                         }
-                        UnityEngine.Debug.Log("Aqui te imprimo el power" + Value);
                         break;
 
                     case "Owner":
                         Value = context.targets[0].GetComponent<CardOutput>().PlayerId;
+                        UnityEngine.Debug.Log("Esta es la ide que devuelve el target.Owner"+ Value);
                         break;
                 }
             }
@@ -144,23 +167,30 @@ namespace Compiler
                 case "Add":
                     GameObject myobject = (GameObject)Argument.Value;
                     list.Add(myobject);
- break;
+                    break;
 
                 case "Shuffle": functions.Shuffle(list); break;
 
                 case "Remove":
-                UnityEngine.Debug.Log("Vamos a ejecutar el remove");
-                Game game = Game.Instance;
-                GameObject myobject1 = (GameObject)Argument.Value; list.Remove(myobject1);myobject1.transform.SetParent(game.gameObject.transform , true);break;
+                    UnityEngine.Debug.Log("Vamos a ejecutar el remove");
+                    Game game = Game.Instance;
+                    GameObject myobject1 = (GameObject)Argument.Value; list.Remove(myobject1); myobject1.transform.SetParent(game.gameObject.transform, true); break;
                 case "Pop":
                     Value = functions.Pop(list);
                     break;
 
                 case "SendBottom": functions.SendBottom(list, (GameObject)Argument.Value); break;
 
-                case "Push": Argument.Evaluate();functions.Push(list, (GameObject)Argument.Value); break;
+                case "Push": Argument.Evaluate(); functions.Push(list, (GameObject)Argument.Value); break;
 
-                case "Find": UnityEngine.Debug.Log("Entramos en el find");functions.Find((Predicate)Argument , list); break;
+                case "Find": UnityEngine.Debug.Log("Entramos en el find"); functions.Find((Predicate)Argument, list); break;
+            }
+            if (Index != null && Value is List<GameObject>)
+            {
+                Index.Evaluate();
+                List<GameObject> finallist = (List<GameObject>)Value;
+                int index = (int)Index.Value;
+                Value = finallist[index];
             }
         }
         public override void ResetValues()
@@ -170,6 +200,9 @@ namespace Compiler
             {
                 Argument.ResetValues();
             }
+            if(Identifier !=null){
+                Identifier.ResetValues();
+            }
             Value = "";
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors, Scope scope)
@@ -177,7 +210,7 @@ namespace Compiler
             if (Identifier != null)
             {
                 Identifier.CheckSemantic(Context, Errors, scope);
-                Identifier.Evaluate();
+
             }
             return true;
         }
@@ -188,7 +221,7 @@ namespace Compiler
             this.Position = Position;
             this.Identifier = Identifier;
         }
-        public Property(string Sintaxys, string CardContainer, string Method, Identifier Identifier, Expression Argument, int Position) : base("", ExpressionType.Property, Position)
+        public Property(string Sintaxys, string CardContainer, string Method, Identifier Identifier, Expression Argument, Expression Index, int Position) : base("", ExpressionType.Property, Position)
         {
             Value = "";
             this.Sintaxys = Sintaxys;
@@ -197,6 +230,7 @@ namespace Compiler
             this.Method = Method;
             this.Argument = Argument;
             this.Identifier = Identifier;
+            this.Index = Index;
         }
         public Property(string Sintaxys, Identifier Identifier, Expression Argument, int Position) : base(".", ExpressionType.Property, Position)
         {

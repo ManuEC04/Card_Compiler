@@ -48,11 +48,14 @@ namespace Compiler
         public void Push(List<GameObject> list, GameObject value)
         {
             Context context = Context.Instance;
-            int index = list.Count - 1;
             list.Add(value);
-            GameObject temp = list[0];
-            list[0] = list[index];
-            list[index] = temp;
+            if (list.Count > 0)
+            {
+                int index = list.Count - 1;
+                GameObject temp = list[0];
+                list[0] = list[index];
+                list[index] = temp;
+            }
             context.Selector.GetComponent<ICardContainer>().RemoveCard(value);
             value.transform.SetParent(context.Selector.transform, false);
         }
@@ -67,7 +70,7 @@ namespace Compiler
                     returnlist.Add(value);
                 }
             }
-            foreach(GameObject value in returnlist)
+            foreach (GameObject value in returnlist)
             {
                 Debug.Log(value.GetComponent<CardOutput>().Card.Name);
             }

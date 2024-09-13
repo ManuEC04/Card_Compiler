@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class Hand : MonoBehaviour , ICardContainer
@@ -20,6 +21,11 @@ public class Hand : MonoBehaviour , ICardContainer
     {
       cards.Remove(value);
       value.transform.SetParent(gameObject.transform , false);
+    }
+    public void AddCard(GameObject value)
+    {
+      cards.Add(value);
+      value.transform.SetParent(gameObject.transform , true);
     }
     void Update()
     {

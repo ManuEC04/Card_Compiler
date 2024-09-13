@@ -5,34 +5,45 @@ namespace Compiler
     {
     public Identifier Identifier {get; set;}
     public override object Value {get;set;}
-        public Expression? Expression {get; set;}
+    public Expression? Expression {get; set;}
 
         public override void Evaluate()
         {
+            /*
             if(Expression !=null)
             {
                 Expression.Evaluate();
                 Value = Expression.Value;
             }
+            */
         }
           public override void ResetValues()
         {
-            UnityEngine.Debug.Log("Declaration reset");
             Identifier.ResetValues();
+            if(Expression !=null)
+            {
+                Expression.ResetValues();
+            }
         }
         public override bool CheckSemantic(Context Context, List<CompilingError> Errors , Scope scope)
         {
-          /* if(scope.Declaration.Contains(this) || Expression == null)
+            
+         if(scope.Declaration.ContainsKey((string)Identifier.Value) || Expression == null)
            {
               Errors.Add(new CompilingError (Position , ErrorCode.Invalid , "You must assign a value for this identifier first"));
               return false;
            }
-           if(!scope.Declaration.Contains(this) || Expression == null)
-           { 
-              scope.Declaration.Add(this);
+           if(Expression == null)
+           {
+             Errors.Add(new CompilingError (Position , ErrorCode.Invalid , "TYou cannot declare a variable with this name"));
+             return false;
            }
-           */
+           UnityEngine.Debug.Log("Se declara una variable con el nombre" + Identifier.Value);
+           Context context = Context.Instance;
+            context.scope.Declaration.Add((string)Identifier.Value , Expression);
+            
            return true;
+          
            
         }
 

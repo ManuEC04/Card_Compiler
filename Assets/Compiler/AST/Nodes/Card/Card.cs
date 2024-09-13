@@ -20,7 +20,6 @@ namespace Compiler
             }
             if (Context.Cards.ContainsKey((string)Name.Value))
             {
-
                 Errors.Add(new CompilingError(Position, ErrorCode.Invalid, "This Card is already declared"));
                 return false;
             }
@@ -61,6 +60,7 @@ namespace Compiler
                 }
             }
             Context.Cards.Add((string)Name.Value, this);
+            OnActivation.CheckSemantic(Context , Errors ,scope);
             return true;
         }
         public override void Evaluate()
